@@ -4,13 +4,10 @@ import com.example.userCrud.Dto.CVReq;
 import com.example.userCrud.Dto.CVRes;
 import com.example.userCrud.Dto.EmployeeCVRes;
 import com.example.userCrud.Dto.web_response;
-import com.example.userCrud.Repository.CVRepository;
 import com.example.userCrud.Service.CVService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class CVController {

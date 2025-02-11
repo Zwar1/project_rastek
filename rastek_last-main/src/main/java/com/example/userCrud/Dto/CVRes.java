@@ -3,7 +3,6 @@ package com.example.userCrud.Dto;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
