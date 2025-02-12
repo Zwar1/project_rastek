@@ -111,8 +111,9 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public List<EmployeeEntity> getAllEmployee() {
-        return employeeRepository.findAll();
+    public List<EmployeeRes> getAllEmployee() {
+        List<EmployeeEntity> employees = employeeRepository.findAll();
+        return employees.stream().map(this::toEmployeeResponse).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

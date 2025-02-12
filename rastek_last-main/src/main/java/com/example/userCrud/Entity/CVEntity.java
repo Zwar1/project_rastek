@@ -29,5 +29,6 @@ public class CVEntity {
 
     @ManyToOne
     @JoinColumn(name = "employee_nik", nullable = false)
+    @JsonIgnore
     private EmployeeEntity employee;
 }

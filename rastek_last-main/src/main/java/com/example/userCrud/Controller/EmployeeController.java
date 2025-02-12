@@ -42,7 +42,7 @@ public class EmployeeController {
             path = "/api/getEmployee",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public List<EmployeeEntity> getAllEmployee(){
+    public List<EmployeeRes> getAllEmployee() {
         return employeeService.getAllEmployee();
     }
 
