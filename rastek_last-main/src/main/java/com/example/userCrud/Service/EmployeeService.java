@@ -26,6 +26,9 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
+    private CVRepository cvRepository;
+
+    @Autowired
     private ValidationService validationService;
 
     @Autowired
@@ -155,6 +158,7 @@ public class EmployeeService {
         EmployeeEntity employeeEntity = employeeRepository.findFirstByNIK(NIK)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee Not Found"));
 
+        cvRepository.deleteByEmployee_NIK(NIK);
         employeeRepository.delete(employeeEntity);
     }
 

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface CVRepository extends JpaRepository<CVEntity, Long> {
-    List<CVEntity> findByEmployee_NIK(Long nik);
+    void deleteByEmployee_NIK(Long nik);
 }

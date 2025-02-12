@@ -94,8 +94,6 @@ public class EmployeeEntity {
     private List<AttendanceLog> attendanceLogs = new ArrayList<>();
 
     // Relasi OneToMany dengan CV
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "employee_nik", referencedColumnName = "NIK", nullable = true)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CVEntity> cv = new ArrayList<>();
-
 }
