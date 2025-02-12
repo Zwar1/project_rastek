@@ -366,7 +366,6 @@ public class EmployeeService {
                         .build())
                 .collect(Collectors.toList());
         // Buat list CVRes dari list CV di EmployeeEntity
-        /*TODO check apakah butuh CV list di get all employee*/
         List<CVRes> cvResList = employeeEntity.getCv().stream()
                 .map(cv -> CVRes.builder()
                         .id(cv.getId())
