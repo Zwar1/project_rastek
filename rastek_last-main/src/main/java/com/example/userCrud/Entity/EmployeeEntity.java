@@ -95,4 +95,7 @@ public class EmployeeEntity {
     // Relasi OneToMany dengan CV
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CVEntity> cv = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "member")
+    private List<ProjectEntity> projects;
 }
