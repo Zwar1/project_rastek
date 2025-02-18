@@ -127,4 +127,12 @@ public class ClientService {
         List<ClientEntity> employees = clientRepository.findAll();
         return employees.stream().map(this::toClientResponse).collect(Collectors.toList());
     }
+
+    @Transactional
+    public void deleteClient(Long clientId){
+        ClientEntity clientEntity = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+
+        clientRepository.delete(clientEntity);
+    }
 }

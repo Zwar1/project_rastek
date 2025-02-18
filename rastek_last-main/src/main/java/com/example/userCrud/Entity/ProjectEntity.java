@@ -29,8 +29,11 @@ public class ProjectEntity {
     private LocalDate projectStart;
     private LocalDate projectEnd;
     private String summary;
+    private String priority;
+    private String status;
     private Integer estimatedHours;
     private Integer totalHours;
+    private Integer progress;
 
     @ManyToOne
     @JoinColumn(name = "client_id")

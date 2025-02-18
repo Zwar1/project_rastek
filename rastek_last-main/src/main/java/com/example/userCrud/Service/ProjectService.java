@@ -51,6 +51,9 @@ public class ProjectService {
         project.setSummary(req.getSummary());
         project.setEstimatedHours(req.getEstimatedHours());
         project.setTotalHours(req.getTotalHours());
+        project.setPriority(req.getPriority());
+        project.setStatus(req.getStatus());
+        project.setProgress(0);
         project.setClient(client);
 
         if (req.getMember() != null && !req.getMember().isEmpty()) {
@@ -93,6 +96,9 @@ public class ProjectService {
                 .summary(project.getSummary())
                 .estimatedHours(project.getEstimatedHours())
                 .totalHours(project.getTotalHours())
+                .priority(project.getPriority())
+                .status(project.getStatus())
+                .progress(project.getProgress())
                 .client(ProjectClientRes.builder()
                         .id(project.getClient().getId())
                         .name(project.getClient().getClientName())
@@ -154,6 +160,9 @@ public class ProjectService {
                 .endDate(req.getEndDate() != null ? req.getEndDate() : project.getProjectEnd())
                 .projectDescription(req.getProjectDescription())
                 .summary(req.getSummary())
+                .priority(req.getPriority())
+                .status(req.getStatus() != null ? req.getStatus() : project.getStatus())
+                .progress(req.getProgress() != null ? req.getProgress() : project.getProgress())
                 .estimatedHours(req.getEstimatedHours())
                 .totalHours(req.getTotalHours())
                 .clientId(req.getClientId() != null ? req.getClientId() : project.getClient().getId())
@@ -184,12 +193,24 @@ public class ProjectService {
             project.setSummary(req.getSummary());
             projectRepository.save(project);
         }
+        if (req.getPriority() != null) {
+            project.setPriority(req.getPriority());
+            projectRepository.save(project);
+        }
+        if (req.getStatus() != null) {
+            project.setStatus(req.getStatus());
+            projectRepository.save(project);
+        }
         if (req.getEstimatedHours() != null) {
             project.setEstimatedHours(req.getEstimatedHours());
             projectRepository.save(project);
         }
         if (req.getTotalHours() != null) {
             project.setTotalHours(req.getTotalHours());
+            projectRepository.save(project);
+        }
+        if (req.getProgress() != null) {
+            project.setProgress(req.getProgress());
             projectRepository.save(project);
         }
         if (req.getMember() != null) {

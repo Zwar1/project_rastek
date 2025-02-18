@@ -20,10 +20,13 @@ public class ProjectRes {
     private LocalDate startDate;
     private LocalDate endDate;
     private String summary;
+    private String status;
+    private String priority;
     private ProjectClientRes client;
     private List<ProjectEmployeeRes> member;
     private Integer estimatedHours;
     private Integer totalHours;
+    private Integer progress;
     private String logo;
     private Date createdAt;
     private Date updatedAt;

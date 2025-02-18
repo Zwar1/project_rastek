@@ -51,4 +51,13 @@ public class ClientController {
         ClientRes res = clientService.updateClientDetails(id, req);
         return web_response.<ClientRes>builder().data(res).message("Client updated").build();
     }
+
+    @DeleteMapping(
+            path = "/api/delete/client/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<String> deleteClient(@PathVariable("id") Long id) {
+        clientService.deleteClient(id);
+        return web_response.<String>builder().data("Client deleted").message("Client deleted").build();
+    }
 }

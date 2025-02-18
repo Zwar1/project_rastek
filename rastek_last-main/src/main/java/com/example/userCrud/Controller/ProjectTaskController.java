@@ -1,0 +1,62 @@
+package com.example.userCrud.Controller;
+
+import com.example.userCrud.Dto.*;
+import com.example.userCrud.Service.ProjectTaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+public class ProjectTaskController {
+    @Autowired
+    private ProjectTaskService projectTaskService;
+
+    @PostMapping(
+            path = "/api/project/addTask",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<ProjectTaskRes> addProjectTask(@RequestBody ProjectTaskReq request) {
+        ProjectTaskRes addTaskRes = projectTaskService.createTask(request);
+        return web_response.<ProjectTaskRes>builder().data(addTaskRes).build();
+    }
+
+    @GetMapping(
+            path = "/api/project/getTask/{taskId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<ProjectTaskRes> getByEmployee(@PathVariable("taskId") Long taskId) {
+        ProjectTaskRes response = projectTaskService.getTask(taskId);
+        return web_response.<ProjectTaskRes>builder().data(response).build();
+    }
+
+    @GetMapping(
+            path = "/api/project/getAllTasks",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<List<ProjectTaskRes>> getAllTasks() {
+        List<ProjectTaskRes> response = projectTaskService.getAllTask();
+        return web_response.<List<ProjectTaskRes>>builder().data(response).build();
+    }
+
+    @PutMapping(
+            path = "/api/project/updateTask/{taskId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<ProjectTaskRes> updateTask(@PathVariable("taskId") Long taskId, @RequestBody ProjectTaskReq request) {
+        ProjectTaskRes updateTaskRes = projectTaskService.updateTask(taskId, request);
+        return web_response.<ProjectTaskRes>builder().data(updateTaskRes).build();
+    }
+
+    @DeleteMapping(
+            path = "/api/project/{projectId}/deleteTask/{taskId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<Void> deleteTask(@PathVariable("projectId") Long projectId, @PathVariable("taskId") Long taskId) {
+        projectTaskService.deleteTask(projectId, taskId);
+        return web_response.<Void>builder().build();
+    }
+}
