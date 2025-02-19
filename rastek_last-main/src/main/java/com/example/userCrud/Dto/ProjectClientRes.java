@@ -12,4 +12,7 @@ import lombok.Builder;
 public class ProjectClientRes {
     private Long id;
     private String name;
+    private String clientCountry;
+    private byte[] profilePicture;
+    private String profilePictureType;
 }

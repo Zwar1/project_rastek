@@ -49,28 +49,28 @@ public class ProjectController {
         return projectService.getAllProject();
     }
 
-    @GetMapping("/api/project/{id}/logo")
-    public ResponseEntity<byte[]> getProjectLogo(@PathVariable Long id) {
-        ProjectEntity project = projectService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+//    @GetMapping("/api/project/{id}/logo")
+//    public ResponseEntity<byte[]> getProjectLogo(@PathVariable Long id) {
+//        ProjectEntity project = projectService.findById(id)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+//
+//        if (project.getLogo() == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(project.getLogoType()))
+//                .body(project.getLogo());
+//    }
 
-        if (project.getLogo() == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(project.getLogoType()))
-                .body(project.getLogo());
-    }
-
-    @DeleteMapping("/api/project/{id}/delete/logo")
-    public web_response<String> deleteProjectLogo(@PathVariable Long id) {
-        projectService.deleteProjectLogo(id);
-        return web_response.<String>builder()
-                .data(null)
-                .message("Project logo successfully deleted")
-                .build();
-    }
+//    @DeleteMapping("/api/project/{id}/delete/logo")
+//    public web_response<String> deleteProjectLogo(@PathVariable Long id) {
+//        projectService.deleteProjectLogo(id);
+//        return web_response.<String>builder()
+//                .data(null)
+//                .message("Project logo successfully deleted")
+//                .build();
+//    }
 
     @PutMapping(
             path = "/api/update/project/{id}"

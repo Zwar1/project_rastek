@@ -105,7 +105,7 @@ public class ProjectTaskService {
                                         .name(employee.getName())  // Only include name
                                         .build())
                                 .collect(Collectors.toList()))
-                .logo((project.getLogo() != null && project.getLogoType() != null) ? project.getLogoType() + "," + Base64.getEncoder().encodeToString(project.getLogo()) : null)
+                //.logo((project.getLogo() != null && project.getLogoType() != null) ? project.getLogoType() + "," + Base64.getEncoder().encodeToString(project.getLogo()) : null)
                 .build();
     }
 

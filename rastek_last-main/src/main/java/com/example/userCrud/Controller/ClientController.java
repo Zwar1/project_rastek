@@ -3,10 +3,14 @@ package com.example.userCrud.Controller;
 import com.example.userCrud.Dto.ClientReq;
 import com.example.userCrud.Dto.ClientRes;
 import com.example.userCrud.Dto.web_response;
+import com.example.userCrud.Entity.ClientEntity;
 import com.example.userCrud.Service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -59,5 +63,28 @@ public class ClientController {
     public web_response<String> deleteClient(@PathVariable("id") Long id) {
         clientService.deleteClient(id);
         return web_response.<String>builder().data("Client deleted").message("Client deleted").build();
+    }
+
+    @GetMapping("/api/client/{id}/profile-picture")
+    public ResponseEntity<byte[]> getClientProfilePicture(@PathVariable Long id) {
+        ClientEntity client = clientService.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+
+        if (client.getProfilePicture() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(client.getProfilePictureType()))
+                .body(client.getProfilePicture());
+    }
+
+    @DeleteMapping("/api/client/{id}/delete/profile-picture")
+    public web_response<String> deleteClientProfilePicture(@PathVariable Long id) {
+        clientService.deleteClientProfilePicture(id);
+        return web_response.<String>builder()
+                .data(null)
+                .message("Client profile picture successfully deleted")
+                .build();
     }
 }

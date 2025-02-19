@@ -64,19 +64,19 @@ public class ProjectService {
         }
 
         // Handle logo only if both logo and logoType are present
-        if (StringUtils.hasText(req.getLogo()) && StringUtils.hasText(req.getLogoType())) {
-            try {
-                byte[] logoData = Base64.getDecoder().decode(req.getLogo());
-                project.setLogo(logoData);
-                project.setLogoType(req.getLogoType());
-            } catch (IllegalArgumentException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid logo format");
-            }
-        } else {
-            // Explicitly set null when no logo is provided
-            project.setLogo(null);
-            project.setLogoType(null);
-        }
+//        if (StringUtils.hasText(req.getLogo()) && StringUtils.hasText(req.getLogoType())) {
+//            try {
+//                byte[] logoData = Base64.getDecoder().decode(req.getLogo());
+//                project.setLogo(logoData);
+//                project.setLogoType(req.getLogoType());
+//            } catch (IllegalArgumentException e) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid logo format");
+//            }
+//        } else {
+//            // Explicitly set null when no logo is provided
+//            project.setLogo(null);
+//            project.setLogoType(null);
+//        }
 
         projectRepository.save(project);
 
@@ -102,6 +102,9 @@ public class ProjectService {
                 .client(ProjectClientRes.builder()
                         .id(project.getClient().getId())
                         .name(project.getClient().getClientName())
+                        .clientCountry(project.getClient().getClientCountry())
+                        .profilePicture(project.getClient().getProfilePicture())
+                        .profilePictureType(project.getClient().getProfilePictureType())
                         .build())
                 // Map team members - only include essential employee info
                 .member(project.getMember() == null ? null :
@@ -111,8 +114,8 @@ public class ProjectService {
                                         .name(employee.getName())  // Only include name
                                         .build())
                                 .collect(Collectors.toList()))
-                .logo((project.getLogo() != null && project.getLogoType() != null) ?
-                        project.getLogoType() + "," + Base64.getEncoder().encodeToString(project.getLogo()) : null)
+               // .logo((project.getLogo() != null && project.getLogoType() != null) ?
+               //         project.getLogoType() + "," + Base64.getEncoder().encodeToString(project.getLogo()) : null)
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();
@@ -132,17 +135,17 @@ public class ProjectService {
         return projects.stream().map(this::toProjectResponse).collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public byte[] getProjectLogo(Long id) {
-        ProjectEntity project = projectRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
-
-        if (project.getLogo() == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Logo not found");
-        }
-
-        return project.getLogo();
-    }
+//    @Transactional(readOnly = true)
+//    public byte[] getProjectLogo(Long id) {
+//        ProjectEntity project = projectRepository.findById(id)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+//
+//        if (project.getLogo() == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Logo not found");
+//        }
+//
+//        return project.getLogo();
+//    }
 
     @Transactional(readOnly = true)
     public Optional<ProjectEntity> findById(Long id) {
@@ -167,8 +170,8 @@ public class ProjectService {
                 .totalHours(req.getTotalHours())
                 .clientId(req.getClientId() != null ? req.getClientId() : project.getClient().getId())
                 .member(req.getMember())
-                .logo(req.getLogo())
-                .logoType(req.getLogoType())
+                //.logo(req.getLogo())
+                //.logoType(req.getLogoType())
                 .build();
 
         validationService.validate(validationReq);
@@ -220,9 +223,9 @@ public class ProjectService {
             project.setMember(teamMembers);
             projectRepository.save(project);
         }
-        if (StringUtils.hasText(req.getLogo()) && StringUtils.hasText(req.getLogoType())) {
-            updateProjectLogo(project, req.getLogo(), req.getLogoType());
-        }
+//        if (StringUtils.hasText(req.getLogo()) && StringUtils.hasText(req.getLogoType())) {
+//            updateProjectLogo(project, req.getLogo(), req.getLogoType());
+//        }
         projectRepository.save(project);
         return toProjectResponse(project);
     }
@@ -240,29 +243,29 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    @Transactional
-    public void updateProjectLogo(ProjectEntity project, String logoBase64, String logoType) {
-        try {
-            byte[] logoData = Base64.getDecoder().decode(logoBase64);
-            project.setLogo(logoData);
-            project.setLogoType(logoType);
-            projectRepository.save(project);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid logo format");
-        }
-    }
+//    @Transactional
+//    public void updateProjectLogo(ProjectEntity project, String logoBase64, String logoType) {
+//        try {
+//            byte[] logoData = Base64.getDecoder().decode(logoBase64);
+//            project.setLogo(logoData);
+//            project.setLogoType(logoType);
+//            projectRepository.save(project);
+//        } catch (IllegalArgumentException e) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid logo format");
+//        }
+//    }
 
-    @Transactional
-    public void deleteProjectLogo(Long id) {
-        ProjectEntity project = projectRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
-
-        if (project.getLogo() == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project has no logo to delete");
-        }
-
-        project.setLogo(null);
-        project.setLogoType(null);
-        projectRepository.save(project);
-    }
+//    @Transactional
+//    public void deleteProjectLogo(Long id) {
+//        ProjectEntity project = projectRepository.findById(id)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+//
+//        if (project.getLogo() == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project has no logo to delete");
+//        }
+//
+//        project.setLogo(null);
+//        project.setLogoType(null);
+//        projectRepository.save(project);
+//    }
 }

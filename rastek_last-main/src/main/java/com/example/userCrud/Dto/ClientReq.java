@@ -23,4 +23,7 @@ public class ClientReq {
     private String clientCountry;
 
     private Boolean isActive;
+
+    private String profilePicture;
+    private String profilePictureType;
 }

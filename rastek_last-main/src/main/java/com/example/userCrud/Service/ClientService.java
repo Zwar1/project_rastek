@@ -4,6 +4,7 @@ import com.example.userCrud.Dto.ClientReq;
 import com.example.userCrud.Dto.ClientRes;
 import com.example.userCrud.Entity.ClientEntity;
 import com.example.userCrud.Entity.LeadsEntity;
+import com.example.userCrud.Entity.ProjectEntity;
 import com.example.userCrud.Repository.ClientRepository;
 import com.example.userCrud.Repository.LeadsRepository;
 import com.example.userCrud.Repository.UserRepository;
@@ -13,10 +14,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +65,12 @@ public class ClientService {
 
         return toClientResponse(clientEntity);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<ClientEntity> findById(Long id) {
+        return clientRepository.findById(id);
+    }
+
 
     private ClientRes toClientResponse(ClientEntity client) {
         return ClientRes.builder()
@@ -108,8 +118,19 @@ public class ClientService {
             clientEntity.setIsActive(req.getIsActive());
             clientRepository.save(clientEntity);
         }
-        clientEntity.setUpdate_by(currentUsername);
+        if (StringUtils.hasText(req.getProfilePicture()) &&
+                StringUtils.hasText(req.getProfilePictureType())) {
+            try {
+                byte[] pictureData = Base64.getDecoder().decode(req.getProfilePicture());
+                clientEntity.setProfilePicture(pictureData);
+                clientEntity.setProfilePictureType(req.getProfilePictureType());
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Invalid profile picture format");
+            }
+        }
 
+        clientEntity.setUpdate_by(currentUsername);
         clientRepository.save(clientEntity);
         return toClientResponse(clientEntity);
     }
@@ -134,5 +155,15 @@ public class ClientService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
 
         clientRepository.delete(clientEntity);
+    }
+
+    @Transactional
+    public void deleteClientProfilePicture(Long id) {
+        ClientEntity client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+
+        client.setProfilePicture(null);
+        client.setProfilePictureType(null);
+        clientRepository.save(client);
     }
 }

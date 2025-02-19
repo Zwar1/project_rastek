@@ -27,7 +27,7 @@ public class ProjectRes {
     private Integer estimatedHours;
     private Integer totalHours;
     private Integer progress;
-    private String logo;
+//    private String logo;
     private Date createdAt;
     private Date updatedAt;
 

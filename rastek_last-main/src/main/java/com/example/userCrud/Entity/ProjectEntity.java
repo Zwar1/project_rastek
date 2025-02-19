@@ -54,9 +54,9 @@ public class ProjectEntity {
     )
     private Set<EmployeeEntity> member;
 
-    @Column(name = "logo", columnDefinition = "bytea", nullable = true)
-    private byte[] logo;
-
-    @Column(name = "logo_type", nullable = true)
-    private String logoType;
+//    @Column(name = "logo", columnDefinition = "bytea", nullable = true)
+//    private byte[] logo;
+//
+//    @Column(name = "logo_type", nullable = true)
+//    private String logoType;
 }

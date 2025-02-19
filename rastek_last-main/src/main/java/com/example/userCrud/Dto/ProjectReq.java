@@ -44,6 +44,6 @@ public class ProjectReq {
     private Long clientId;
 
     private List<Long> member;
-    private String logo;
-    private String logoType;
+//    private String logo;
+//    private String logoType;
 }
