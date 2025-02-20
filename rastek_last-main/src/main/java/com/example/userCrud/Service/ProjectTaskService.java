@@ -32,7 +32,7 @@ public class ProjectTaskService {
     private ValidationService validationService;
 
     @Transactional
-    public ProjectTaskRes createTask(ProjectTaskReq req) {
+    public ProjectTaskRes createTask(Long projectId, ProjectTaskReq req) {
         validationService.validate(req);
 
         ProjectTask projectTask = new ProjectTask();
@@ -42,7 +42,7 @@ public class ProjectTaskService {
         projectTask.setEndDate(req.getEndDate());
         projectTask.setProgress(0);
 
-        ProjectEntity project = projectRepository.findById(req.getProjectId())
+        ProjectEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
         projectTask.setProject(project);
 

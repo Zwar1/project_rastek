@@ -34,6 +34,6 @@ public class ProjectTaskReq {
     @NotNull
     private List<Long> taskMember;
 
-    @NotNull
-    private Long projectId;
+//    @NotNull
+//    private Long projectId;
 }

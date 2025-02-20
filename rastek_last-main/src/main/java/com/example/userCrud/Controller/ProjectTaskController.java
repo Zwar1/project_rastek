@@ -14,13 +14,18 @@ public class ProjectTaskController {
     private ProjectTaskService projectTaskService;
 
     @PostMapping(
-            path = "/api/project/addTask",
+            path = "/api/project/{projectId}/addTask",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public web_response<ProjectTaskRes> addProjectTask(@RequestBody ProjectTaskReq request) {
-        ProjectTaskRes addTaskRes = projectTaskService.createTask(request);
-        return web_response.<ProjectTaskRes>builder().data(addTaskRes).build();
+    public web_response<ProjectTaskRes> addProjectTask(
+            @PathVariable("projectId") Long projectId,
+            @RequestBody ProjectTaskReq request) {
+        ProjectTaskRes addTaskRes = projectTaskService.createTask(projectId, request);
+        return web_response.<ProjectTaskRes>builder()
+                .data(addTaskRes)
+                .message("Task successfully created")
+                .build();
     }
 
     @GetMapping(
