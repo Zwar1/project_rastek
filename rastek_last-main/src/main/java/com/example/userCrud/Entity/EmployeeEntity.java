@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @AllArgsConstructor
@@ -38,7 +39,6 @@ public class EmployeeEntity {
     private String kontakDarurat;
     private String noKontakDarurat;
     private String emailPribadi;
-    private String pendidikanTerakhir;
     private String jurusan;
     private String namaUniversitas;
     private String namaIbuKandung;
@@ -46,6 +46,7 @@ public class EmployeeEntity {
     private String jumlahAnak;
     private String nomorRekening;
     private String bank;
+    private String pendidikanTerakhir;
 
     private LocalDate joinDate;
 
@@ -58,6 +59,24 @@ public class EmployeeEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @Column(name = "pin")
+    private String pin;
+
+    @Column(name = "last_check_in")
+    private LocalDateTime lastCheckIn;
+
+    @Column(name = "last_check_out")
+    private LocalDateTime lastCheckOut;
+
+    @Column(name = "last_work_location")
+    private String lastWorkLocation;
+
+    @Column(name = "last_latitude")
+    private Double lastLatitude;
+
+    @Column(name = "last_longitude")
+    private Double lastLongitude;
 
     // Relasi OneToMany dengan Riwayat Jabatan
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

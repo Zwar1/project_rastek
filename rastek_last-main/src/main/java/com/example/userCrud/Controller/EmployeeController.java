@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -50,9 +52,9 @@ public class EmployeeController {
             path = "/api/getProfile/Information",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public web_response<UserResponse> getProfileInformation() {
-        UserResponse userResponse = employeeService.getByUserAuth();
-        return web_response.<UserResponse>builder().message("Success").data(userResponse).build();
+    public web_response<EmployeeRes> getProfileInformation() {
+        EmployeeRes employeeRes = employeeService.getByUserAuth();
+        return web_response.<EmployeeRes>builder().message("Success").data(employeeRes).build();
     }
 
 
@@ -137,5 +139,31 @@ public class EmployeeController {
         List<EmployeeRes> employeeJPU = employeeService.getEmployeeWithJPU();
         return ResponseEntity.ok(employeeJPU);
     }
+
+    @PutMapping("/{NIK}/attendance")
+    public ResponseEntity<EmployeeRes> updateAttendance(
+            @PathVariable Long NIK,
+            @RequestParam LocalDateTime checkIn,
+            @RequestParam LocalDateTime checkOut,
+            @RequestParam String workLocation,
+            @RequestParam Double latitude,
+            @RequestParam Double longitude) {
+
+        EmployeeRes updatedEmployee = employeeService.updateLastAttendance(
+                NIK, checkIn, checkOut, workLocation, latitude, longitude
+        );
+
+        return ResponseEntity.ok(updatedEmployee);
+    }
+
+    @GetMapping(
+            path = "/api/getProfile/AttendanceInformation",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<EmployeeRes> getAttendanceInformation() {
+        EmployeeRes employeeRes = employeeService.getAttendanceByUserAuth();
+        return web_response.<EmployeeRes>builder().message("Success").data(employeeRes).build();
+    }
+
 }
 

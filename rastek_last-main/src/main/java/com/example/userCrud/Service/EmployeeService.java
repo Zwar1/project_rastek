@@ -6,6 +6,7 @@ import com.example.userCrud.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +32,9 @@ public class EmployeeService {
 
     @Autowired
     private ValidationService validationService;
+
+    @Autowired
+    private ManualAttendanceLogRepository manualAttendanceLogRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -117,7 +122,7 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponse getByUserAuth() {
+    public EmployeeRes getByUserAuth() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
@@ -129,15 +134,9 @@ public class EmployeeService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is deleted");
         }
 
-        return UserResponse.builder()
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .created_at(user.getCreatedAt())
-                .updated_at(user.getUpdatedAt())
-                .created_by(user.getCreated_by())
-                .updated_by(user.getUpdate_by())
-                .employee(toEmployeeResponse(user.getEmployee()))
-                .build();
+        EmployeeEntity employee = user.getEmployee();
+
+        return toEmployeeResponse(employee);
     }
 
     @Transactional(readOnly = true)
@@ -418,4 +417,105 @@ public class EmployeeService {
                 .cv(cvResList)
                 .build();
     }
+
+    @Transactional
+    public EmployeeRes updateLastAttendance(Long NIK, LocalDateTime checkIn, LocalDateTime checkOut,
+                                            String workLocation, Double latitude, Double longitude) {
+        // Ambil data employee berdasarkan NIK
+        EmployeeEntity employee = employeeRepository.findFirstByNIK(NIK)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+
+        // Update data absensi terakhir
+        employee.setLastCheckIn(checkIn);
+        employee.setLastCheckOut(checkOut);
+        employee.setLastWorkLocation(workLocation);
+        employee.setLastLatitude(latitude);
+        employee.setLastLongitude(longitude);
+
+        // Simpan perubahan
+        employeeRepository.save(employee);
+
+        // Kembalikan EmployeeRes dengan data yang telah terupdate
+        return EmployeeRes.builder()
+                .NIK(employee.getNIK())
+                .name(employee.getName())
+                .lastCheckIn(employee.getLastCheckIn())
+                .lastCheckOut(employee.getLastCheckOut())
+                .lastWorkLocation(employee.getLastWorkLocation())
+                .lastLatitude(employee.getLastLatitude())
+                .lastLongitude(employee.getLastLongitude())
+                .build();
+    }
+
+
+    @Transactional(readOnly = true)
+    public EmployeeRes getAttendanceByUserAuth() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        // Pastikan username yang sedang login valid
+        if (currentUsername == null || currentUsername.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No user is logged in");
+        }
+
+        // Ambil user berdasarkan username
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your session expired"));
+
+        // Verifikasi bahwa user tidak dihapus
+        if (user.is_deleted()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is deleted");
+        }
+
+        // Ambil EmployeeEntity terkait user
+        EmployeeEntity employee = user.getEmployee();
+        if (employee == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found for this user");
+        }
+
+        // Ambil data absensi terakhir dari EmployeeEntity
+        // Jika Anda sudah menambahkan data absensi terakhir pada EmployeeEntity (seperti lastCheckIn, lastCheckOut, dll.)
+        // Anda bisa langsung mengakses data tersebut
+
+        EmployeeRes employeeRes = toEmployeeResponse(employee);
+
+        // Jika Anda ingin memverifikasi atau memanipulasi data absensi tambahan
+        employeeRes.setLastCheckIn(employee.getLastCheckIn());
+        employeeRes.setLastCheckOut(employee.getLastCheckOut());
+        employeeRes.setLastWorkLocation(employee.getLastWorkLocation());
+        employeeRes.setLastLatitude(employee.getLastLatitude());
+        employeeRes.setLastLongitude(employee.getLastLongitude());
+
+        return employeeRes;
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 1 0 * * *") // Jalankan setiap hari pukul 00:01
+    public void resetAndUpdateAttendance() {
+        LocalDate today = LocalDate.now();
+
+        // Ambil semua karyawan
+        List<EmployeeEntity> employees = employeeRepository.findAll();
+
+        for (EmployeeEntity employee : employees) {
+            Long nik = employee.getNIK();
+
+            // Ambil check-in pertama dan check-out terakhir di hari ini dari repository
+            Optional<LocalDateTime> firstCheckInOpt = manualAttendanceLogRepository.findFirstCheckIn(nik, today); // Gunakan instance repository
+            Optional<LocalDateTime> lastCheckOutOpt = manualAttendanceLogRepository.findLastCheckOut(nik, today); // Gunakan instance repository
+
+            // Reset data absensi harian
+            employee.setLastCheckIn(null);
+            employee.setLastCheckOut(null);
+
+            // Jika ada check-in atau check-out baru, update employee
+            firstCheckInOpt.ifPresent(employee::setLastCheckIn);
+            lastCheckOutOpt.ifPresent(employee::setLastCheckOut);
+
+            // Simpan perubahan ke database
+            employeeRepository.save(employee);
+        }
+    }
+
 }
