@@ -5,6 +5,7 @@ import com.example.userCrud.Dto.ClientRes;
 import com.example.userCrud.Entity.ClientEntity;
 import com.example.userCrud.Entity.LeadsEntity;
 import com.example.userCrud.Entity.ProjectEntity;
+import com.example.userCrud.Hash.BCrypt;
 import com.example.userCrud.Repository.ClientRepository;
 import com.example.userCrud.Repository.LeadsRepository;
 import com.example.userCrud.Repository.UserRepository;
@@ -79,7 +80,11 @@ public class ClientService {
                 .clientContact(client.getClientContact())
                 .clientEmail(client.getClientEmail())
                 .clientCountry(client.getClientCountry())
+                .clientAddress(client.getClientAddress())
                 .isActive(client.getIsActive())
+                .picName(client.getPicName())
+                .picNumber(client.getPicNumber())
+                .password(client.getPassword())
                 .version(client.getVersion())
                 .created_by(client.getCreated_by())
                 .update_by(client.getUpdate_by())
@@ -111,7 +116,23 @@ public class ClientService {
             clientRepository.save(clientEntity);
         }
         if (Objects.nonNull(req.getClientCountry()) && !req.getClientCountry().isEmpty()) {
-            clientEntity.setClientCountry( req.getClientCountry());
+            clientEntity.setClientCountry(req.getClientCountry());
+            clientRepository.save(clientEntity);
+        }
+        if (Objects.nonNull(req.getClientAddress()) && !req.getClientAddress().isEmpty()) {
+            clientEntity.setClientAddress(req.getClientAddress());
+            clientRepository.save(clientEntity);
+        }
+        if (Objects.nonNull(req.getPicName()) && !req.getPicName().isEmpty()) {
+            clientEntity.setPicName(req.getPicName());
+            clientRepository.save(clientEntity);
+        }
+        if (Objects.nonNull(req.getPicNumber()) && !req.getPicNumber().describeConstable().isEmpty()) {
+            clientEntity.setPicNumber(req.getPicNumber());
+            clientRepository.save(clientEntity);
+        }
+        if (Objects.nonNull(req.getPassword()) && !req.getPassword().isEmpty()) {
+            clientEntity.setPassword(BCrypt.hashpw(req.getPassword(), BCrypt.gensalt()));
             clientRepository.save(clientEntity);
         }
         if (Objects.nonNull(req.getIsActive())) {

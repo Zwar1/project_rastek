@@ -22,8 +22,17 @@ public class ClientReq {
 
     private String clientCountry;
 
+    private String clientAddress;
+
+    private String picName;
+
+    private Integer picNumber;
+
+    private String password;
+
     private Boolean isActive;
 
     private String profilePicture;
+
     private String profilePictureType;
 }
