@@ -122,7 +122,7 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public EmployeeRes getByUserAuth() {
+    public UserResponse getByUserAuth() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
@@ -130,13 +130,21 @@ public class EmployeeService {
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your session expired"));
 
-        if (user.is_deleted()) {
+        if(user.is_deleted()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is deleted");
         }
 
-        EmployeeEntity employee = user.getEmployee();
-
-        return toEmployeeResponse(employee);
+        return UserResponse.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .created_at(user.getCreatedAt())
+                .updated_at(user.getUpdatedAt())
+                .created_by(user.getCreated_by())
+                .updated_by(user.getUpdate_by())
+                .employee(Optional.ofNullable(user.getEmployee())
+                        .map(this::toEmployeeResponse)
+                        .orElse(null))
+                .build();
     }
 
     @Transactional(readOnly = true)

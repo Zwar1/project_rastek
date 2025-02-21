@@ -52,9 +52,9 @@ public class EmployeeController {
             path = "/api/getProfile/Information",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public web_response<EmployeeRes> getProfileInformation() {
-        EmployeeRes employeeRes = employeeService.getByUserAuth();
-        return web_response.<EmployeeRes>builder().message("Success").data(employeeRes).build();
+    public web_response<UserResponse> getProfileInformation() {
+        UserResponse userResponse = employeeService.getByUserAuth();
+        return web_response.<UserResponse>builder().message("Success").data(userResponse).build();
     }
 
 
