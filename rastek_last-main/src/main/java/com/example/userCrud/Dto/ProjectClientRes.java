@@ -13,6 +13,7 @@ public class ProjectClientRes {
     private Long id;
     private String name;
     private String clientCountry;
+    private String clientAddress;
     private byte[] profilePicture;
     private String profilePictureType;
 }

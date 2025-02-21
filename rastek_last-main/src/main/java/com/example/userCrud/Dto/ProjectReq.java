@@ -1,9 +1,6 @@
 package com.example.userCrud.Dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,4 +43,9 @@ public class ProjectReq {
     private List<Long> member;
 //    private String logo;
 //    private String logoType;
+
+    @AssertTrue(message = "End date must be greater than Start date")
+    public boolean isEndDateValid() {
+        return endDate.isAfter(startDate);
+    }
 }

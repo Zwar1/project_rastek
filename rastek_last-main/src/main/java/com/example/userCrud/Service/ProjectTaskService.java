@@ -41,6 +41,7 @@ public class ProjectTaskService {
         projectTask.setStartDate(req.getStartDate());
         projectTask.setEndDate(req.getEndDate());
         projectTask.setProgress(0);
+        projectTask.setOnHold(req.isOnHold());
 
         ProjectEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
@@ -66,6 +67,7 @@ public class ProjectTaskService {
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .progress(task.getProgress())
+                .onHold(task.isOnHold())
                 .startDate(task.getStartDate())
                 .endDate(task.getEndDate())
                 .members(task.getTaskMember().stream()
@@ -153,6 +155,9 @@ public class ProjectTaskService {
             taskEntity.setProgress(req.getProgress());
             projectTaskRepository.save(taskEntity);
         }
+
+        taskEntity.setOnHold(req.isOnHold());
+
         if (req.getTaskMember() != null) {
             Set<EmployeeEntity> teamMembers = employeeRepository.findAllById(req.getTaskMember())
                     .stream()
@@ -163,6 +168,7 @@ public class ProjectTaskService {
         projectTaskRepository.save(taskEntity);
         return mapToResponse(taskEntity);
     }
+
 
     @Transactional
     public void deleteTask(Long projectId, Long taskId) {

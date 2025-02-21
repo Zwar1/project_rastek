@@ -7,6 +7,7 @@ import com.example.userCrud.Dto.web_response;
 import com.example.userCrud.Entity.ProjectEntity;
 import com.example.userCrud.Service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,12 @@ import java.util.List;
 public class ProjectController {
     @Autowired
     ProjectService projectService;
+    private ProjectRes projectRes;
 
     @PostMapping("/api/create/project")
-    public web_response<ProjectRes> createProject(@RequestBody ProjectReq request) {
+    public web_response<ProjectRes> createProject(
+            @RequestBody ProjectReq request
+    ) {
         ProjectRes projectRes = projectService.createProject(request);
         return web_response.<ProjectRes>builder()
                 .data(projectRes)
@@ -45,8 +49,12 @@ public class ProjectController {
             path = "/api/get/project",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public List<ProjectRes> getAll() {
-        return projectService.getAllProject();
+    public List<ProjectRes> getAll(
+            @RequestParam(defaultValue = " endDate") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        List<ProjectRes> sortedProjects = projectService.getAllProjectSortedBy(sortBy, sortDir);
+        return ResponseEntity.ok(sortedProjects).getBody();
     }
 
 //    @GetMapping("/api/project/{id}/logo")

@@ -1,5 +1,6 @@
 package com.example.userCrud.Dto;
 
+import com.example.userCrud.Entity.ProjectTask;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -27,4 +28,5 @@ public class ProjectTaskRes {
     private LocalDate endDate;
     private List<ProjectTaskMemberRes> members;
     private ProjectRes project;
+    private boolean onHold;
 }

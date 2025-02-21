@@ -38,6 +38,9 @@ public class ProjectTask {
     @Column(name = "progress")
     private Integer progress = 0;
 
+    @Column(name = "onHold")
+    private boolean onHold = false;
+
     // Task member based on employee that part of the project
     @ManyToMany
     @JoinTable(
@@ -51,5 +54,4 @@ public class ProjectTask {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private ProjectEntity project;
-
 }

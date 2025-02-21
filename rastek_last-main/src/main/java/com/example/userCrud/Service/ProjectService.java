@@ -7,6 +7,7 @@ import com.example.userCrud.Entity.ProjectEntity;
 import com.example.userCrud.Repository.ClientRepository;
 import com.example.userCrud.Repository.EmployeeRepository;
 import com.example.userCrud.Repository.ProjectRepository;
+import org.simpleframework.xml.Default;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -102,6 +103,7 @@ public class ProjectService {
                 .client(ProjectClientRes.builder()
                         .id(project.getClient().getId())
                         .name(project.getClient().getClientName())
+                        .clientAddress(project.getClient().getClientAddress())
                         .clientCountry(project.getClient().getClientCountry())
                         .profilePicture(project.getClient().getProfilePicture())
                         .profilePictureType(project.getClient().getProfilePictureType())
@@ -114,15 +116,15 @@ public class ProjectService {
                                         .name(employee.getName())  // Only include name
                                         .build())
                                 .collect(Collectors.toList()))
-               // .logo((project.getLogo() != null && project.getLogoType() != null) ?
-               //         project.getLogoType() + "," + Base64.getEncoder().encodeToString(project.getLogo()) : null)
+                // .logo((project.getLogo() != null && project.getLogoType() != null) ?
+                //         project.getLogoType() + "," + Base64.getEncoder().encodeToString(project.getLogo()) : null)
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();
     }
 
     @Transactional(readOnly = true)
-    public ProjectRes getProject(Long id){
+    public ProjectRes getProject(Long id) {
         ProjectEntity project = projectRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
 
@@ -132,6 +134,31 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<ProjectRes> getAllProject() {
         List<ProjectEntity> projects = projectRepository.findAll();
+        return projects.stream().map(this::toProjectResponse).collect(Collectors.toList());
+    }
+
+    // Sorted fetch by project end date ASC order
+    @Transactional(readOnly = true)
+    public List<ProjectRes> getAllProjectSortedBy(String sortBy, String order) {
+        List<ProjectEntity> projects = List.of();
+        order = order.toLowerCase().trim();
+        sortBy = sortBy.toLowerCase().trim();
+
+        // Add more sort by parameters
+        switch (sortBy) {
+            case "enddate":
+                projects = order.equals("asc") ?
+                        projectRepository.findAllByOrderByProjectEndAsc() :
+                        projectRepository.findAllByOrderByProjectEndDesc();
+                break;
+            case "priority":
+                projects = order.equals("asc") ?
+                        projectRepository.findAllByOrderByPriorityAsc() :
+                        projectRepository.findAllByOrderByPriorityDesc();
+                break;
+            default:
+                projects = projectRepository.findAllByOrderByProjectEndAsc();
+        }
         return projects.stream().map(this::toProjectResponse).collect(Collectors.toList());
     }
 

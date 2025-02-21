@@ -29,7 +29,9 @@ public class ProjectTaskReq {
     @NotNull
     @Min(0)
     @Max(100)
-    private Integer progress = 0;
+    private Integer progress;
+
+    private boolean onHold;
 
     @NotNull
     private List<Long> taskMember;
