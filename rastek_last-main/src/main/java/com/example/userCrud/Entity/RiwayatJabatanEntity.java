@@ -36,8 +36,8 @@ public class RiwayatJabatanEntity {
     private boolean isCurrent=true;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "kode_jabatan")
-    private JabatanEntity kode_jabatan;
+    @JoinColumn(name = "id_jabatan")
+    private JabatanEntity id_jabatan;
 
 //    @ManyToOne
 //    @JoinColumn(name = "employee_nik")

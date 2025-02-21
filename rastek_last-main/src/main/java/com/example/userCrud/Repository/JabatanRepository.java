@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface JabatanRepository extends JpaRepository<JabatanEntity, String> {
     Optional<JabatanEntity> findFirstByKodeJabatan(String kodeJabatan);
     Optional<JabatanEntity> findByNamaJabatan(String namaJabatan);
+    Optional<JabatanEntity> findFirstById(Long id);
 
     @Query("SELECT j.namaJabatan FROM JabatanEntity j WHERE j.departementEntity.id = :departementId AND j.isAtasan = :isAtasan")
     List<String> findNamaJabatanByDepartementAndIsAtasan(@Param("departementId") Long departementId, @Param("isAtasan") boolean isAtasan);

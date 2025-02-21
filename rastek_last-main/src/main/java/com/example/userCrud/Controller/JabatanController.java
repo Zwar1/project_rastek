@@ -27,11 +27,11 @@ public class JabatanController {
     }
 
     @GetMapping(
-            path = "/api/getKodeJabatan/{kodeJabatan}",
+            path = "/api/getKodeJabatan/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public web_response<JabatanRes> get(@PathVariable("kodeJabatan") String kodeJabatan){
-        JabatanRes jabatan = jabatanService.get(kodeJabatan);
+    public web_response<JabatanRes> get(@PathVariable("id") Long id){
+        JabatanRes jabatan = jabatanService.get(id);
         return web_response.<JabatanRes>builder().data(jabatan).build();
     }
 
@@ -48,11 +48,11 @@ public class JabatanController {
     }
 
     @DeleteMapping(
-            path = "/api/deleteJabatan/{kodeJabatan}",
+            path = "/api/deleteJabatan/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public web_response<String> delete(@PathVariable("kodeJabatan") String kodeJabatan){
-        jabatanService.delete(kodeJabatan);
+    public web_response<String> delete(@PathVariable("id") Long id){
+        jabatanService.delete(id);
         return web_response.<String>builder().data("Data Deleted").build();
     }
 

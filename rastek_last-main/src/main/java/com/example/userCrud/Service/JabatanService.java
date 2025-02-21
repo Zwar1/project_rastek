@@ -41,6 +41,7 @@ public class JabatanService {
 
         JabatanEntity jabatan = new JabatanEntity();
 
+        jabatan.setId(jabatan.getId());
         jabatan.setKodeJabatan(request.getKodeJabatan());
         jabatan.setNamaJabatan(request.getNamaJabatan());
         jabatan.setSequence(request.getSequence());
@@ -69,8 +70,8 @@ public class JabatanService {
     }
 
     @Transactional(readOnly = true)
-    public JabatanRes get(String kodeJabatan) {
-        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(kodeJabatan)
+    public JabatanRes get(Long id) {
+        JabatanEntity jabatan = jabatanRepository.findFirstById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
 
         if (jabatan != null) {
@@ -86,7 +87,7 @@ public class JabatanService {
         validationService.validate(request);
 
 
-        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(request.getKodeJabatan())
+        JabatanEntity jabatan = jabatanRepository.findFirstById(request.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
         if (jabatan == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found");
@@ -138,8 +139,8 @@ public class JabatanService {
     }
 
     @Transactional
-    public void delete(String kodeJabatan){
-        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(kodeJabatan)
+    public void delete(Long id){
+        JabatanEntity jabatan = jabatanRepository.findFirstById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
 
         if (jabatan != null) {
@@ -194,7 +195,7 @@ public class JabatanService {
         }
 
         // Ambil DepartementEntity dari riwayat jabatan terbaru (misalnya index 0)
-        DepartementEntity departementEntity = riwayatJabatanList.get(0).getKode_jabatan().getDepartementEntity();
+        DepartementEntity departementEntity = riwayatJabatanList.get(0).getId_jabatan().getDepartementEntity();
         if (departementEntity == null) {
             throw new EntityNotFoundException("Departement not found for the employee");
         }

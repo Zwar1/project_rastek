@@ -330,7 +330,7 @@ public class EmployeeService {
 
         // Urutkan berdasarkan sequence kodeJabatan dan joinDate
         employeeEntities.sort(Comparator.comparing((EmployeeEntity e) -> e.getRiwayatJabatan().stream()
-                        .map(r -> r.getKode_jabatan().getSequence())
+                        .map(r -> r.getId_jabatan().getSequence())
                         .min(Long::compareTo) // Ambil sequence terkecil jika karyawan memiliki beberapa riwayat jabatan
                         .orElse(Long.MAX_VALUE))
                 .thenComparing(EmployeeEntity::getTanggalLahir));
@@ -352,14 +352,14 @@ public class EmployeeService {
                         .kontrakKedua(riwayatJabatan.getKontrakKedua())
                         .salary(riwayatJabatan.getSalary())
                         .kodeJabatan(JabatanRes.builder()
-                                .kodeJabatan(riwayatJabatan.getKode_jabatan().getKodeJabatan())
-                                .namaJabatan(riwayatJabatan.getKode_jabatan().getNamaJabatan())
-                                .isAtasan(riwayatJabatan.getKode_jabatan().isAtasan())
-                                .sequence(riwayatJabatan.getKode_jabatan().getSequence())
-                                .departement(riwayatJabatan.getKode_jabatan().getDepartementEntity() != null
-                                        ? riwayatJabatan.getKode_jabatan().getDepartementEntity().getDepartement_name() : null)
-                                .division(riwayatJabatan.getKode_jabatan().getDivisionEntity() != null
-                                        ? riwayatJabatan.getKode_jabatan().getDivisionEntity().getDivision_name() : null)
+                                .kodeJabatan(riwayatJabatan.getId_jabatan().getKodeJabatan())
+                                .namaJabatan(riwayatJabatan.getId_jabatan().getNamaJabatan())
+                                .isAtasan(riwayatJabatan.getId_jabatan().isAtasan())
+                                .sequence(riwayatJabatan.getId_jabatan().getSequence())
+                                .departement(riwayatJabatan.getId_jabatan().getDepartementEntity() != null
+                                        ? riwayatJabatan.getId_jabatan().getDepartementEntity().getDepartement_name() : null)
+                                .division(riwayatJabatan.getId_jabatan().getDivisionEntity() != null
+                                        ? riwayatJabatan.getId_jabatan().getDivisionEntity().getDivision_name() : null)
                                 .build())
                         .build())
                 .toList();

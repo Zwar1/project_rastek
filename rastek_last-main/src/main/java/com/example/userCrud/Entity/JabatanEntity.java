@@ -18,7 +18,9 @@ import java.util.Set;
 public class JabatanEntity {
 
     @Id
-    @Column(name = "kode_jabatan", unique = true)
+    @Column(name = "id_jabatan", unique = true)
+    private Long id;
+
     private String kodeJabatan;
 
     private String namaJabatan;

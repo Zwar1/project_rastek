@@ -36,5 +36,5 @@ public class UpdateRiwayatJabatanReq {
     //     SubDivision info
     private Long subDivisionId;
 
-    private String kodeJabatan;
+    private Long idJabatan;
 }

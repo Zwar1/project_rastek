@@ -43,10 +43,10 @@ public class RiwayatJabatanService {
         EmployeeEntity employeeEntity = employeeRepository.findFirstByNIK(request.getNIK())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee Not Found"));
 
-        if (request.getKodeJabatan() != null) {
-            JabatanEntity jabatanEntityS = jabatanRepository.findFirstByKodeJabatan(request.getKodeJabatan())
+        if (request.getIdJabatan() != null) {
+            JabatanEntity jabatanEntityS = jabatanRepository.findFirstById(request.getIdJabatan())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
-            riwayatJabatan.setKode_jabatan(jabatanEntityS);
+            riwayatJabatan.setId_jabatan(jabatanEntityS);
         }
 
         employeeEntity.getRiwayatJabatan().add(riwayatJabatan);
@@ -96,10 +96,10 @@ public class RiwayatJabatanService {
             riwayatJabatanRepository.save(riwayatJabatan);
         }
 
-        if (request.getKodeJabatan() != null) {
-            JabatanEntity jabatanEntityS = jabatanRepository.findById(request.getKodeJabatan())
+        if (request.getIdJabatan() != null) {
+            JabatanEntity jabatanEntityS = jabatanRepository.findFirstById(request.getIdJabatan())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
-            riwayatJabatan.setKode_jabatan(jabatanEntityS);
+            riwayatJabatan.setId_jabatan(jabatanEntityS);
 
             riwayatJabatanRepository.save(riwayatJabatan);
         }
@@ -117,14 +117,14 @@ public class RiwayatJabatanService {
     private RiwayatJabatanRes toRiwayatResponse(RiwayatJabatanEntity riwayatJabatan) {
         // Membangun JabatanRes untuk Jabatan Struktural
         JabatanRes jabatanRes = JabatanRes.builder()
-                .namaJabatan(riwayatJabatan.getKode_jabatan().getNamaJabatan())
-                .kodeJabatan(riwayatJabatan.getKode_jabatan().getKodeJabatan())
-                .isAtasan(riwayatJabatan.getKode_jabatan().isAtasan())
-                .sequence(riwayatJabatan.getKode_jabatan().getSequence())
-                .departement(riwayatJabatan.getKode_jabatan().getDepartementEntity() != null
-                        ? riwayatJabatan.getKode_jabatan().getDepartementEntity().getDepartement_name() : null)
-                .division(riwayatJabatan.getKode_jabatan().getDivisionEntity() != null
-                        ? riwayatJabatan.getKode_jabatan().getDivisionEntity().getDivision_name() : null)
+                .namaJabatan(riwayatJabatan.getId_jabatan().getNamaJabatan())
+                .kodeJabatan(riwayatJabatan.getId_jabatan().getKodeJabatan())
+                .isAtasan(riwayatJabatan.getId_jabatan().isAtasan())
+                .sequence(riwayatJabatan.getId_jabatan().getSequence())
+                .departement(riwayatJabatan.getId_jabatan().getDepartementEntity() != null
+                        ? riwayatJabatan.getId_jabatan().getDepartementEntity().getDepartement_name() : null)
+                .division(riwayatJabatan.getId_jabatan().getDivisionEntity() != null
+                        ? riwayatJabatan.getId_jabatan().getDivisionEntity().getDivision_name() : null)
                 .build();
 
         // Mengembalikan RiwayatJabatanRes yang menggunakan objek JabatanRes

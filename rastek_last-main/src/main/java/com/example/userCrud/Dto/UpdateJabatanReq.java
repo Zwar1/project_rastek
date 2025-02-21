@@ -15,6 +15,8 @@ public class UpdateJabatanReq {
 
     @JsonIgnore
     @NotBlank
+    private Long id;
+
     private String kodeJabatan;
 
     private String namaJabatan;

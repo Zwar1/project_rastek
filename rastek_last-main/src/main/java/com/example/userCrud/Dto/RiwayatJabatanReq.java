@@ -34,6 +34,6 @@ public class RiwayatJabatanReq {
     private BigDecimal salary;
 
     @NotNull
-    private String kodeJabatan;
+    private Long idJabatan;
 
 }
