@@ -2,6 +2,7 @@ package com.example.userCrud.Dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 public class UpdateEmployeeReq {
 
     @JsonIgnore
-    @NotBlank
+    @NotNull
     private Long NIK;
 
     // Personal Information fields

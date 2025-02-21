@@ -17,7 +17,7 @@ import java.util.List;
 public class UpdateRiwayatJabatanReq {
 
     @JsonIgnore
-    @NotBlank
+    @NotNull
     private Long id;
 
     // Basic Information fields

@@ -14,7 +14,7 @@ import lombok.*;
 public class UpdateDepartementReq {
 
     @JsonIgnore
-    @NotBlank
+    @NonNull
     private Long id;
 
     @NotBlank

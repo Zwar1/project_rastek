@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JabatanRepository extends JpaRepository<JabatanEntity, String> {
-    JabatanEntity findFirstByKodeJabatan(String kodeJabatan);
+    Optional<JabatanEntity> findFirstByKodeJabatan(String kodeJabatan);
     Optional<JabatanEntity> findByNamaJabatan(String namaJabatan);
 
     @Query("SELECT j.namaJabatan FROM JabatanEntity j WHERE j.departementEntity.id = :departementId AND j.isAtasan = :isAtasan")

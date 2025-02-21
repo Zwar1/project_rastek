@@ -43,8 +43,8 @@ public class RiwayatJabatanService {
         EmployeeEntity employeeEntity = employeeRepository.findFirstByNIK(request.getNIK())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee Not Found"));
 
-        if (request.getNamaJabatan() != null) {
-            JabatanEntity jabatanEntityS = jabatanRepository.findByNamaJabatan(request.getNamaJabatan())
+        if (request.getKodeJabatan() != null) {
+            JabatanEntity jabatanEntityS = jabatanRepository.findFirstByKodeJabatan(request.getKodeJabatan())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
             riwayatJabatan.setKode_jabatan(jabatanEntityS);
         }

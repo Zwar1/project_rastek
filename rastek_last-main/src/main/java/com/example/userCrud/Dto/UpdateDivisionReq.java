@@ -2,6 +2,7 @@ package com.example.userCrud.Dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -14,7 +15,7 @@ import lombok.*;
 public class UpdateDivisionReq {
 
     @JsonIgnore
-    @NotBlank
+    @NotNull
     private Long id;
 
     @NotBlank

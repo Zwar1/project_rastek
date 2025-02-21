@@ -70,7 +70,8 @@ public class JabatanService {
 
     @Transactional(readOnly = true)
     public JabatanRes get(String kodeJabatan) {
-        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(kodeJabatan);
+        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(kodeJabatan)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
 
         if (jabatan != null) {
             return toJabatanResponse(jabatan);
@@ -85,7 +86,8 @@ public class JabatanService {
         validationService.validate(request);
 
 
-        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(request.getKodeJabatan());
+        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(request.getKodeJabatan())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
         if (jabatan == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found");
         }
@@ -137,7 +139,8 @@ public class JabatanService {
 
     @Transactional
     public void delete(String kodeJabatan){
-        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(kodeJabatan);
+        JabatanEntity jabatan = jabatanRepository.findFirstByKodeJabatan(kodeJabatan)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Jabatan Not Found"));
 
         if (jabatan != null) {
             jabatanRepository.delete(jabatan);
