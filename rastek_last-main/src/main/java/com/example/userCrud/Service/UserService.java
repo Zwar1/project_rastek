@@ -173,13 +173,16 @@ public class UserService implements UserDetailsService {
 
 
     @Transactional
-    public UserResponse updateUser(Long id, UpdateUserRequest userRequest){
+    public UserResponse updateUser(UpdateUserRequest userRequest){
 
-        User user = userRepository.findFirstById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your session expired"));
 
         if(user.is_deleted()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Is Deleted from our World");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Is Deleted from our Data");
         }
 
         if(userRepository.existsByUsername(userRequest.getUsername())){
@@ -202,9 +205,6 @@ public class UserService implements UserDetailsService {
         }
 
         // Get the authenticated username from the security context
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
-
         user.setUpdate_by(currentUsername);
 
         List<String> roles = user.getRoles().stream()

@@ -122,7 +122,7 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponse getByUserAuth() {
+    public EmployeeRes getByUserAuth() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
@@ -134,17 +134,9 @@ public class EmployeeService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is deleted");
         }
 
-        return UserResponse.builder()
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .created_at(user.getCreatedAt())
-                .updated_at(user.getUpdatedAt())
-                .created_by(user.getCreated_by())
-                .updated_by(user.getUpdate_by())
-                .employee(Optional.ofNullable(user.getEmployee())
-                        .map(this::toEmployeeResponse)
-                        .orElse(null))
-                .build();
+        EmployeeEntity employee = user.getEmployee();
+
+        return toEmployeeResponse(employee);
     }
 
     @Transactional(readOnly = true)
@@ -284,8 +276,17 @@ public class EmployeeService {
     public EmployeeRes updateDataByEmployee(UpdateEmployeeKaryawanReq request) {
         validationService.validate(request);
 
-        EmployeeEntity employeeEntity = employeeRepository.findFirstByNIK(request.getNIK())
-               .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your session expired"));
+
+        if(user.is_deleted()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not exist");
+        }
+
+        EmployeeEntity employeeEntity = user.getEmployee();
 
         if (Objects.nonNull(request.getNoTelp()) && !request.getNoTelp().isEmpty()) {
             employeeEntity.setNoTelp(request.getNoTelp());

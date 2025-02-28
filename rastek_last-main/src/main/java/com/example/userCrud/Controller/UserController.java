@@ -36,9 +36,9 @@ public class UserController {
         return web_response.<UserResponse>builder().data(addRoleUserResponse).message("Success").build();
     }
 
-    @PatchMapping("/update/{userId}")
-    public web_response<UserResponse> Update(@PathVariable("userId") Long userId,@RequestBody UpdateUserRequest request){
-        UserResponse updateUserResponse = userService.updateUser(userId,request);
+    @PatchMapping("/update")
+    public web_response<UserResponse> Update(@RequestBody UpdateUserRequest request){
+        UserResponse updateUserResponse = userService.updateUser(request);
         return web_response.<UserResponse>builder().data(updateUserResponse).message("Success").build();
     }
 

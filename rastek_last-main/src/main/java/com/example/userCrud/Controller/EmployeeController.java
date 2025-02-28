@@ -52,9 +52,9 @@ public class EmployeeController {
             path = "/api/getProfile/Information",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public web_response<UserResponse> getProfileInformation() {
-        UserResponse userResponse = employeeService.getByUserAuth();
-        return web_response.<UserResponse>builder().message("Success").data(userResponse).build();
+    public web_response<EmployeeRes> getProfileInformation() {
+        EmployeeRes employeeRes = employeeService.getByUserAuth();
+        return web_response.<EmployeeRes>builder().message("Success").data(employeeRes).build();
     }
 
 
@@ -72,13 +72,11 @@ public class EmployeeController {
 
     // Edit data for employee
     @PutMapping(
-            path = "/api/editEmployeeKaryawan/{NIK}", // Change to NIK to avoid MissingPathVariableException
+            path = "/api/editEmployeeKaryawan", // Change to NIK to avoid MissingPathVariableException
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public web_response<EmployeeRes> updateByEmployee(@RequestBody UpdateEmployeeKaryawanReq request,
-                                                      @PathVariable("NIK") Long NIK) {
-        request.setNIK(NIK);
+    public web_response<EmployeeRes> updateByEmployee(@RequestBody UpdateEmployeeKaryawanReq request) {
         EmployeeRes employeeRes = employeeService.updateDataByEmployee(request);
         return web_response.<EmployeeRes>builder().data(employeeRes).build();
     }

@@ -14,10 +14,6 @@ import lombok.*;
 public class UpdateEmployeeKaryawanReq {
     // Request for update employee data (employee only)
 
-    @JsonIgnore
-    @NotNull
-    private Long NIK;
-
     private String noTelp;
     private String kontakDarurat;
     private String noKontakDarurat;
