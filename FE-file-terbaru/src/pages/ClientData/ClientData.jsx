@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useGetClient from "../../hook/useGetClient";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,13 @@ const ClientData = () => {
   const clientList = useGetClient();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [filter, setFilter] = useState("all");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    console.log("Toggling dropdown");
+    setIsDropdownOpen(!isDropdownOpen)
+  };
 
   const handleOpenClick = (client) => {
     console.log("Opening client:", client);
@@ -17,6 +24,13 @@ const ClientData = () => {
     console.log("Dispatched client ID:", client.id);
     navigate('/client-detail');
   };
+
+  const filteredClientList = clientList.filter(client => {
+    if (filter === "all") return true;
+    if (filter === "active") return client.isActive;
+    if (filter === "inactive") return !client.isActive;
+    return true;
+  });
 
   return (
     <div className="card h-100 p-0 radius-12">
@@ -33,38 +47,45 @@ const ClientData = () => {
           </form>
           <div className="dropdown">
             <button
-              className="btn btn-outline-primary-600 btn-sm radius-8 not-active px-16 py-9 dropdown-toggle toggle-icon"
+              className="btn btn-outline-primary-600 btn-sm radius-8 px-16 py-9 dropdown-toggle toggle-icon"
               type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+              onClick={toggleDropdown}
             >
-              {" "}
-              Filter{" "}
+              Filter
             </button>
-            <ul className="dropdown-menu">
+            <ul className={`dropdown-menu ${isDropdownOpen ? "show" : ""}`}>
               <li>
-                <Link
-                  className="dropdown-item px-16 py-8 rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900"
-                  to="#"
+                <button
+                  className={`dropdown-item ${filter === "all" ? "active" : ""}`}
+                  onClick={() => {
+                    setFilter("all");
+                    toggleDropdown();
+                  }}
                 >
                   All
-                </Link>
+                </button>
               </li>
               <li>
-                <Link
-                  className="dropdown-item px-16 py-8 rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900"
-                  to="#"
+                <button
+                  className={`dropdown-item ${filter === "active" ? "active" : ""}`}
+                  onClick={() => {
+                    setFilter("active");
+                    toggleDropdown();
+                  }}
                 >
                   Active
-                </Link>
+                </button>
               </li>
               <li>
-                <Link
-                  className="dropdown-item px-16 py-8 rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900"
-                  to="#"
+                <button
+                  className={`dropdown-item ${filter === "inactive" ? "active" : ""}`}
+                  onClick={() => {
+                    setFilter("inactive");
+                    toggleDropdown();
+                  }}
                 >
                   Inactive
-                </Link>
+                </button>
               </li>
             </ul>
           </div>
@@ -92,7 +113,49 @@ const ClientData = () => {
               </tr>
             </thead>
             <tbody>
-              {clientList.map((client, index) => (
+              {filteredClientList.length > 0 ? (
+                filteredClientList.map((client, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{client.clientName}</td>
+                    <td>{client.clientContact}</td>
+                    <td>{client.clientEmail}</td>
+                    <td>{client.clientCountry ? client.clientCountry : "-"}</td>
+                    <td className="text-center">
+                      <span
+                        className={`bg-${client.isActive ? "success" : "danger"}-focus 
+                        text-${client.isActive ? "success" : "danger"}-main px-20 py-6 
+                        rounded-pill fw-medium text-sm`}
+                      >
+                        {client.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <div className="d-flex align-items-center gap-10 justify-content-center">
+                        <button
+                          className="bg-info-focus bg-hover-info-200 text-info-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
+                          onClick={() => handleOpenClick(client)}
+                        >
+                          <Icon icon="majesticons:eye-line" className="icon text-xl" />
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
+                        >
+                          <Icon icon="lucide:edit" className="menu-icon" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center text-secondary-light">
+                    No clients found.
+                  </td>
+                </tr>
+              )}
+              {/* {clientList.map((client, index) => (
                 <tr key={index}>
                   <td>
                     <div className="d-flex align-items-center gap-10">
@@ -144,7 +207,7 @@ const ClientData = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))} */}
             </tbody>
           </table>
         </div>
@@ -179,7 +242,7 @@ const ClientData = () => {
           </ul>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -7,6 +7,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../apiService";
 
 const ClientEdit = ({ clientId, clientData }) => {
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+  const [isHovered, setIsHovered] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   console.log("ClientEdit rendered with ID:", clientId);
@@ -17,6 +20,76 @@ const ClientEdit = ({ clientId, clientData }) => {
     profilePicture,
     refreshClient
   } = useGetClientById(clientId);
+
+  const [uploadLoading, setUploadLoading] = useState(false);
+
+  const handleProfilePictureChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    console.log('File details:', {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    });
+
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      alert('Please upload an image file (JPEG, PNG, or GIF)');
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert('File size should be less than 5MB');
+      return;
+    }
+
+    try {
+      setUploadLoading(true);
+      const base64 = await convertImageToBase64(file);
+      console.log('Base64 preview:', {
+        length: base64.length,
+        start: base64.substring(0, 100) + '...',
+        type: file.type
+      });
+
+      const payload = {
+        profilePicture: base64,
+        profilePictureType: file.type
+      };
+      console.log('Request payload:', {
+        endpoint: `/api/update/client/${clientId}/profile-picture`,
+        type: payload.profilePictureType,
+        dataLength: payload.profilePicture.length
+      });
+
+      const response = await api.put(`/api/update/client/${clientId}/profile-picture`, payload);
+      console.log('Upload success:', response.data);
+
+      alert('Profile picture updated successfully');
+      setUploadLoading(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      alert('Failed to update profile picture: ' + error.message);
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
+  const convertImageToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        resolve(reader.result.split(',')[1]);
+      };
+
+      reader.onerror = (error) => {
+        reject(error);
+      }
+    });
+  };
 
   useEffect(() => {
     console.log("ClientEdit useEffect - Current ID:", clientId);
@@ -67,13 +140,49 @@ const ClientEdit = ({ clientId, clientData }) => {
             alt=""
             className="w-100 object-fit-cover"
           />
-          <div className="pb-24 ms-16 mb-24 me-16  mt--100">
+          <div className="pb-24 ms-16 mb-24 me-16 mt--100">
             <div className="text-center border border-top-0 border-start-0 border-end-0">
-              <img
-                src={profilePicture || "assets/images/user.png"}
-                alt=""
-                className="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover"
-              />
+              <div className="position-relative d-inline-block"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <img
+                  src={profilePicture || "assets/images/user.png"}
+                  alt="Profile Picture"
+                  className="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover"
+                />
+                {isHovered && (
+                  <label
+                    htmlFor="profile-upload"
+                    className="position-absolute w-100 h-100 top-0 start-0 d-flex align-items-center justify-content-center"
+                    style={{
+                      cursor: 'pointer',
+                      background: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+                      borderRadius: '50%',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <div className="d-flex flex-column align-items-center text-white">
+                      <i className="bi bi-camera-fill fs-3 mb-2"></i>
+                      <span className="small">Change Photo</span>
+                    </div>
+                    <input
+                      type="file"
+                      id="profile-upload"
+                      accept="image/*"
+                      onChange={handleProfilePictureChange}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                )}
+                {uploadLoading && (
+                  <div className="position-absolute top-50 start-50 translate-middle w-100 h-100 d-flex align-items-center justify-content-center">
+                    <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
+                      <span className="visually-hidden">Uploading...</span>
+                    </div>
+                  </div>
+                )}
+              </div>
               <h6 className="mb-0 mt-16">{clientData?.clientName}</h6>
             </div>
             <div className="mt-24">
@@ -152,7 +261,7 @@ const ClientEdit = ({ clientId, clientData }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

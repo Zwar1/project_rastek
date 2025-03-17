@@ -2,6 +2,7 @@ package com.example.userCrud.Service;
 
 import com.example.userCrud.Dto.ClientReq;
 import com.example.userCrud.Dto.ClientRes;
+import com.example.userCrud.Dto.ProfilePictureReq;
 import com.example.userCrud.Dto.UserResponse;
 import com.example.userCrud.Entity.ClientEntity;
 import com.example.userCrud.Entity.LeadsEntity;
@@ -19,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -197,5 +195,45 @@ public class ClientService {
         client.setProfilePicture(null);
         client.setProfilePictureType(null);
         clientRepository.save(client);
+    }
+
+    @Transactional
+    public ClientRes updateProfilePicture(Long clientId, ProfilePictureReq request) {
+        ClientEntity client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+
+        // Validate base64 string, and decode image data, image size, mime type
+        try {
+
+            if (!StringUtils.hasText(request.getProfilePicture())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Profile picture data is required");
+            }
+
+            byte[] pictureData = Base64.getDecoder().decode(request.getProfilePicture());
+
+            if (pictureData.length > 5 * 1024 * 1024) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Profile picture size exceeds 5MB limit");
+            }
+
+            String mimeType = request.getProfilePictureType();
+            if (!Arrays.asList("image/jpeg", "image/png", "image/gif").contains(mimeType)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Invalid image type. Supported types: JPEG, PNG, GIF");
+            }
+
+            client.setProfilePicture(pictureData);
+            client.setProfilePictureType(mimeType);
+
+            // Update audit fields
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUsername = authentication.getName();
+            client.setUpdate_by(currentUsername);
+
+            ClientEntity savedClient = clientRepository.save(client);
+            return toClientResponse(savedClient);
+
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid base64 image data");
+        }
     }
 }
