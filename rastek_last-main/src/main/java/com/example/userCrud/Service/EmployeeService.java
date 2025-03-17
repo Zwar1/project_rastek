@@ -118,7 +118,6 @@ public class EmployeeService {
 
     @Transactional(readOnly = true)
     public UserResponse getByUserAuth() {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
@@ -129,6 +128,11 @@ public class EmployeeService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is deleted");
         }
 
+        // Handle null employee data
+        EmployeeRes employeeRes = user.getEmployee() != null
+                ? toEmployeeResponse(user.getEmployee())
+                : null;
+
         return UserResponse.builder()
                 .username(user.getUsername())
                 .email(user.getEmail())
@@ -136,7 +140,7 @@ public class EmployeeService {
                 .updated_at(user.getUpdatedAt())
                 .created_by(user.getCreated_by())
                 .updated_by(user.getUpdate_by())
-                .employee(toEmployeeResponse(user.getEmployee()))
+                .employee(employeeRes)
                 .build();
     }
 
@@ -344,45 +348,63 @@ public class EmployeeService {
 
 
     private EmployeeRes toEmployeeResponse(EmployeeEntity employeeEntity) {
-        List<RiwayatJabatanRes> riwayatJabatanResList = employeeEntity.getRiwayatJabatan().stream()
-                .map(riwayatJabatan -> RiwayatJabatanRes.builder()
-                        .id_riwayat(riwayatJabatan.getId())
-                        .statusKontrak(riwayatJabatan.getStatusKontrak())
-                        .tmt_awal(riwayatJabatan.getTmt_mulai())
-                        .tmt_akhir(riwayatJabatan.getTmt_akhir())
-                        .kontrakKedua(riwayatJabatan.getKontrakKedua())
-                        .salary(riwayatJabatan.getSalary())
-                        .kodeJabatan(JabatanRes.builder()
-                                .kodeJabatan(riwayatJabatan.getKode_jabatan().getKodeJabatan())
-                                .namaJabatan(riwayatJabatan.getKode_jabatan().getNamaJabatan())
-                                .isAtasan(riwayatJabatan.getKode_jabatan().isAtasan())
-                                .sequence(riwayatJabatan.getKode_jabatan().getSequence())
-                                .departement(riwayatJabatan.getKode_jabatan().getDepartementEntity() != null
-                                        ? riwayatJabatan.getKode_jabatan().getDepartementEntity().getDepartement_name() : null)
-                                .division(riwayatJabatan.getKode_jabatan().getDivisionEntity() != null
-                                        ? riwayatJabatan.getKode_jabatan().getDivisionEntity().getDivision_name() : null)
-                                .build())
-                        .build())
-                .toList();
-        // Buat list AttachmentRes dari list Attachment di EmployeeEntity
-        List<AttachmentRes> attachmentResList = employeeEntity.getAttachment().stream()
-                .map(attachment -> AttachmentRes.builder()
-                        .attachment(attachment.getAttachment())
-                        .build())
-                .collect(Collectors.toList());
-        // Buat list CVRes dari list CV di EmployeeEntity
-        List<CVRes> cvResList = employeeEntity.getCv().stream()
-                .map(cv -> CVRes.builder()
-                        .id(cv.getId())
-                        .projectName(cv.getProjectName())
-                        .projectRole(cv.getProjectRole())
-                        .projectStart(cv.getProjectStart())
-                        .projectEnd(cv.getProjectEnd())
-                        .projectDescription(cv.getProjectDescription())
-                        .build())
-                .collect(Collectors.toList());
+        // Early return if employee is null
+        if (employeeEntity == null) {
+            return null;
+        }
 
-        // Buat EmployeeRes yang sesuai dengan EmployeeEntity
+        // Handle RiwayatJabatan mapping with null checks
+        List<RiwayatJabatanRes> riwayatJabatanResList = Optional.ofNullable(employeeEntity.getRiwayatJabatan())
+                .map(riwayatList -> riwayatList.stream()
+                        .map(riwayatJabatan -> RiwayatJabatanRes.builder()
+                                .id_riwayat(riwayatJabatan.getId())
+                                .statusKontrak(riwayatJabatan.getStatusKontrak())
+                                .tmt_awal(riwayatJabatan.getTmt_mulai())
+                                .tmt_akhir(riwayatJabatan.getTmt_akhir())
+                                .kontrakKedua(riwayatJabatan.getKontrakKedua())
+                                .salary(riwayatJabatan.getSalary())
+                                .kodeJabatan(Optional.ofNullable(riwayatJabatan.getKode_jabatan())
+                                        .map(jabatan -> JabatanRes.builder()
+                                                .kodeJabatan(jabatan.getKodeJabatan())
+                                                .namaJabatan(jabatan.getNamaJabatan())
+                                                .isAtasan(jabatan.isAtasan())
+                                                .sequence(jabatan.getSequence())
+                                                .departement(Optional.ofNullable(jabatan.getDepartementEntity())
+                                                        .map(DepartementEntity::getDepartement_name)
+                                                        .orElse(null))
+                                                .division(Optional.ofNullable(jabatan.getDivisionEntity())
+                                                        .map(DivisionEntity::getDivision_name)
+                                                        .orElse(null))
+                                                .build())
+                                        .orElse(null))
+                                .build())
+                        .toList())
+                .orElse(Collections.emptyList());
+
+        // Handle Attachment mapping with null checks
+        List<AttachmentRes> attachmentResList = Optional.ofNullable(employeeEntity.getAttachment())
+                .map(attachments -> attachments.stream()
+                        .map(attachment -> AttachmentRes.builder()
+                                .attachment(attachment.getAttachment())
+                                .build())
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+
+        // Handle CV mapping with null checks
+        List<CVRes> cvResList = Optional.ofNullable(employeeEntity.getCv())
+                .map(cvList -> cvList.stream()
+                        .map(cv -> CVRes.builder()
+                                .id(cv.getId())
+                                .projectName(cv.getProjectName())
+                                .projectRole(cv.getProjectRole())
+                                .projectStart(cv.getProjectStart())
+                                .projectEnd(cv.getProjectEnd())
+                                .projectDescription(cv.getProjectDescription())
+                                .build())
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+
+        // Build final response with null-safe accessors
         return EmployeeRes.builder()
                 .NIK(employeeEntity.getNIK())
                 .name(employeeEntity.getName())
@@ -412,7 +434,9 @@ public class EmployeeService {
                 .status(employeeEntity.getEmployeeStatus())
                 .created_at(employeeEntity.getCreatedAt())
                 .updated_at(employeeEntity.getUpdatedAt())
-                .userProfile(employeeEntity.getUserProfile() != null ? employeeEntity.getUserProfile().getProfilePicture() : null)
+                .userProfile(Optional.ofNullable(employeeEntity.getUserProfile())
+                        .map(UserProfile::getProfilePicture)
+                        .orElse(null))
                 .riwayatJabatan(riwayatJabatanResList)
                 .attachment(attachmentResList)
                 .cv(cvResList)

@@ -31,4 +31,5 @@ public class ClientRes {
     private String update_by;
     private Date createdAt;
     private Date updatedAt;
+    private UserResponse user;
 }

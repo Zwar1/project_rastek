@@ -33,9 +33,12 @@ public class ClientController {
             path = "/api/get/client/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public web_response<ClientRes> getClientById(@PathVariable("id") Long id, @RequestBody ClientReq req) {
+    public web_response<ClientRes> getClientById(@PathVariable("id") Long id) {
         ClientRes res = clientService.getClientDetails(id);
-        return web_response.<ClientRes>builder().data(res).message("Client found").build();
+        return web_response.<ClientRes>builder()
+                .data(res)
+                .message("Client found with associated user data")
+                .build();
     }
 
     @GetMapping(

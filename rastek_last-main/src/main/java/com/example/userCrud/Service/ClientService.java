@@ -2,6 +2,7 @@ package com.example.userCrud.Service;
 
 import com.example.userCrud.Dto.ClientReq;
 import com.example.userCrud.Dto.ClientRes;
+import com.example.userCrud.Dto.UserResponse;
 import com.example.userCrud.Entity.ClientEntity;
 import com.example.userCrud.Entity.LeadsEntity;
 import com.example.userCrud.Entity.ProjectEntity;
@@ -90,6 +91,16 @@ public class ClientService {
                 .update_by(client.getUpdate_by())
                 .createdAt(client.getCreatedAt())
                 .updatedAt(client.getUpdatedAt())
+                .user(client.getUser() != null ? UserResponse.builder()
+                        .id(client.getUser().getId())
+                        .username(client.getUser().getUsername())
+                        .email(client.getUser().getEmail())
+                        .is_active(client.getUser().is_active())
+                        .created_by(client.getUser().getCreated_by())
+                        .updated_by(client.getUser().getUpdate_by())
+                        .created_at(client.getUser().getCreatedAt())
+                        .updated_at(client.getUser().getUpdatedAt())
+                        .build() : null)
                 .build();
     }
 
@@ -157,7 +168,7 @@ public class ClientService {
     }
 
     @Transactional(readOnly = true)
-    public ClientRes getClientDetails(Long clientId){
+    public ClientRes getClientDetails(Long clientId) {
         ClientEntity clientEntity = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
 

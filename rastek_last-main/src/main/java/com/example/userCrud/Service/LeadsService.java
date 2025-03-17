@@ -85,8 +85,10 @@ public class LeadsService {
 
         User user = new User();
 
+        // auto generated username and password
         user.setUsername(leads.getClientName());
         user.setPassword(BCrypt.hashpw(leads.getClientNumber() + leads.getClientName() + "@" + leads.getId(), BCrypt.gensalt()));
+
         user.setEmail(leads.getClientEmail());
         user.setCreated_by(currentUsername);
         userRepository.save(user);

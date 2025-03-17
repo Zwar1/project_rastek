@@ -1,0 +1,12 @@
+.holiday-cell {
+    background-color: #dc3545 !important;
+    color: white !important;
+  }
+  
+  .holiday-cell .fc-daygrid-day-number {
+    color: white !important;
+  }
+  
+  .holiday-cell:hover {
+    background-color: #bb2d3b !important;
+  }

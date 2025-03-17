@@ -1,0 +1,29 @@
+ .project-card {
+   margin-bottom: 5px;
+   /* Vertical spacing between projects */
+ }
+
+ @media (min-width: 768px) {
+   .project-card {
+     margin-right: 5px;
+     /* Horizontal spacing between projects */
+   }
+ }
+
+ @media print {
+   body * {
+     visibility: hidden;
+   }
+
+   #pdf-content,
+   #pdf-content * {
+     visibility: visible;
+   }
+
+   #print-content {
+     position: absolute;
+     left: 0;
+     top: 0;
+     width: 100%;
+   }
+ }
