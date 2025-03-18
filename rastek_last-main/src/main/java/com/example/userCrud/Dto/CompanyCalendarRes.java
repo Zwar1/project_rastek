@@ -24,4 +24,5 @@ public class CompanyCalendarRes {
     private Boolean isFree;
 
     private String description;
+    
 }

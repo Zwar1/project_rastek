@@ -25,15 +25,5 @@ public class LeaveApprovalController {
         return ResponseEntity.ok(web_response.<List<LeaveApprovalRes>>builder().data(leaveApprovalResList).build());
     }
 
-    @PutMapping(
-            path = "/api/updateApproval/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<web_response<LeaveApprovalRes>> update(@RequestBody LeaveApprovalProcess request,
-                                                                 @PathVariable("id") Long id) {
-        request.setRequestId(id);
-        LeaveApprovalRes leaveApprovalRes = leaveApprovalService.updateLeaveApproval(request);
-        return ResponseEntity.ok(web_response.<LeaveApprovalRes>builder().data(leaveApprovalRes).build());
-    }
+
 }

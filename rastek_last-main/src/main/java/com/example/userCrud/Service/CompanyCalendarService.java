@@ -42,6 +42,7 @@ public class CompanyCalendarService {
         calendar.setEndDate(request.getEndDate());
         calendar.setDescription(request.getDescription());
         calendar.setCompanyEvent(event);
+        calendar.setIsFree(request.getIsFree());
 
         event.getCalendars().add(calendar);
         companyEventRepository.save(event);
@@ -56,7 +57,7 @@ public class CompanyCalendarService {
                 .nameEvent(companyCalendar.getCompanyEvent().getEventName())
                 .startDate(companyCalendar.getStartDate())
                 .endDate(companyCalendar.getEndDate())
-                .isFree(companyCalendar.getCompanyEvent().getIsFree())
+                .isFree(companyCalendar.getIsFree())
                 .description(companyCalendar.getDescription())
                 .build();
     }

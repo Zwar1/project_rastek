@@ -8,5 +8,6 @@ import java.time.LocalDate;
 public interface CompanyCalendarRepository extends JpaRepository<CompanyCalendar, Long> {
     CompanyCalendar findFirstById(Long id);
 
-    boolean existsByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate startDate, LocalDate endDate);
+
+    boolean existsByStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsFreeTrue(LocalDate date, LocalDate date1);
 }

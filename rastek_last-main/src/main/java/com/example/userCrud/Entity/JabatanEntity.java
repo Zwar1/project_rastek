@@ -18,6 +18,7 @@ import java.util.Set;
 public class JabatanEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_jabatan", unique = true)
     private Long id;
 

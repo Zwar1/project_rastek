@@ -26,8 +26,6 @@ public class CompanyEvent {
 
     private String eventName;
 
-    private Boolean isFree;
-
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_Calendar", nullable = true)
     private List<CompanyCalendar> calendars = new ArrayList<>();

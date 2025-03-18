@@ -3,6 +3,7 @@ package com.example.userCrud.Service;
 import com.example.userCrud.Dto.LeaveApprovalProcess;
 import com.example.userCrud.Dto.LeaveApprovalReq;
 import com.example.userCrud.Dto.LeaveApprovalRes;
+import com.example.userCrud.Dto.LeaveRequestRes;
 import com.example.userCrud.Entity.EmployeeEntity;
 import com.example.userCrud.Entity.LeaveApproval;
 import com.example.userCrud.Entity.LeaveRequest;
@@ -70,22 +71,7 @@ public class LeaveApprovalService {
 
     }
 
-    @Transactional
-    public LeaveApprovalRes updateLeaveApproval(LeaveApprovalProcess request){
-        LeaveRequest request1 = leaveRequestRepository.findFirstById(request.getRequestId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 
-        LeaveApproval approval = leaveApprovalRepository.findByLeaveRequestAndApprover_NIK(request1, request.getNikApprover())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
-
-
-        approval.setStatus(request.getStatus());
-        leaveApprovalRepository.save(approval);
-
-        leaveRequestService.processLeaveRequestApproval(request1.getId());
-
-        return toApprovalResponse(approval);
-    }
 
     private LeaveApprovalRes toApprovalResponse(LeaveApproval approvalreq){
         LeaveApprovalRes response = new LeaveApprovalRes();

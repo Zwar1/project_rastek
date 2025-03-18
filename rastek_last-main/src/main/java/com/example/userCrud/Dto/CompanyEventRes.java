@@ -15,6 +15,4 @@ public class CompanyEventRes {
 
     private String eventName;
 
-    private Boolean isFree;
-
 }

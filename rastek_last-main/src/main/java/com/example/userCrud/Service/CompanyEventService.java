@@ -29,14 +29,12 @@ public class CompanyEventService {
         CompanyEvent companyEvent = new CompanyEvent();
 
         companyEvent.setEventName(request.getEventName());
-        companyEvent.setIsFree(request.getIsFree());
 
         companyEventRepository.save(companyEvent);
 
         return CompanyEventRes.builder()
                 .id(companyEvent.getId())
                 .eventName(companyEvent.getEventName())
-                .isFree(companyEvent.getIsFree())
                 .build();
     }
 
@@ -48,7 +46,6 @@ public class CompanyEventService {
         return CompanyEventRes.builder()
                 .id(event.getId())
                 .eventName(event.getEventName())
-                .isFree(event.getIsFree())
                 .build();
     }
 
@@ -60,7 +57,6 @@ public class CompanyEventService {
                 allCompanyEvent -> CompanyEventRes.builder()
                         .id(allCompanyEvent.getId())
                         .eventName(allCompanyEvent.getEventName())
-                        .isFree(allCompanyEvent.getIsFree())
                         .build()).collect(Collectors.toList());
     }
 

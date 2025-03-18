@@ -18,7 +18,7 @@ public interface LeaveApprovalRepository extends JpaRepository<LeaveApproval, Lo
 
     List<LeaveApproval> findByLeaveRequest(LeaveRequest leaveRequest);
 
-    Optional<LeaveApproval> findByLeaveRequestAndApprover_NIK(LeaveRequest leaveRequest, Long approverNIK);
+    List<LeaveApproval> findByLeaveRequestAndApprover_NIK(LeaveRequest leaveRequest, Long approverNIK);
 
     // Mencari semua LeaveRequest di mana employee adalah approver
     @Query("SELECT la.leaveRequest FROM LeaveApproval la WHERE la.approver.NIK = :nik")

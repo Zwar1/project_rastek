@@ -20,4 +20,6 @@ public class CompanyCalendarReq {
     private LocalDate endDate;
 
     private String description;
+
+    private Boolean isFree;
 }

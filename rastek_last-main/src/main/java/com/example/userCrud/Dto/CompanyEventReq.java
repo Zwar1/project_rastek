@@ -13,6 +13,6 @@ public class CompanyEventReq {
 
     private String eventName;
 
-    private Boolean isFree;
+
 
 }

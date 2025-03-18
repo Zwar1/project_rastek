@@ -16,6 +16,8 @@ public class LeaveRequestRes {
 
     private Long id;
 
+    private Long NIK;
+
     private String nama;
 
     private LocalDate startDate;

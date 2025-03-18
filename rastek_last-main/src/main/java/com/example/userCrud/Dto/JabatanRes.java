@@ -11,6 +11,7 @@ import lombok.*;
 public class JabatanRes {
 
     //Struktural Fields
+    private Long id;
     private String kodeJabatan;
     private String namaJabatan;
     private Boolean isAtasan;

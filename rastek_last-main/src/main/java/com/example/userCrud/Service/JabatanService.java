@@ -207,15 +207,14 @@ public class JabatanService {
 
     private JabatanRes toJabatanResponse(JabatanEntity jabatan) {
 
-        JabatanEntity jabatan1 = jabatan;
-
         return JabatanRes.builder()
-                .kodeJabatan(jabatan1.getKodeJabatan())
-                .namaJabatan(jabatan1.getNamaJabatan())
-                .isAtasan(jabatan1.isAtasan())
-                .sequence(jabatan1.getSequence())
-                .departement(jabatan1.getDepartementEntity().getDepartement_name())
-                .division(jabatan1.getDivisionEntity() != null ? jabatan1.getDivisionEntity().getDivision_name() : null)
+                .id(jabatan.getId())
+                .kodeJabatan(jabatan.getKodeJabatan())
+                .namaJabatan(jabatan.getNamaJabatan())
+                .isAtasan(jabatan.isAtasan())
+                .sequence(jabatan.getSequence())
+                .departement(jabatan.getDepartementEntity().getDepartement_name())
+                .division(jabatan.getDivisionEntity() != null ? jabatan.getDivisionEntity().getDivision_name() : null)
                 .build();
     }
 

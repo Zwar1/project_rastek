@@ -5,6 +5,8 @@ import com.example.userCrud.Entity.*;
 import com.example.userCrud.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,16 +37,13 @@ public class LeaveRequestService {
     EmployeeAnnualRepository employeeAnnualRepository;
 
     @Autowired
-    JabatanRepository jabatanRepository;
+    CompanyCalendarRepository companyCalendarRepository;
 
     @Autowired
     LeaveApprovalRepository leaveApprovalRepository;
 
     @Autowired
-    CompanyCalendarRepository companyCalendarRepository;
-
-    @Autowired
-    CompanyEventRepository companyEventRepository;
+    UserRepository userRepository;
 
 
     @Transactional
@@ -116,7 +115,29 @@ public class LeaveRequestService {
                 .collect(Collectors.toList());
     }
 
-    private LeaveRequestRes toLeaveRequestResponse(LeaveRequest leave) {
+    @Transactional(readOnly = true)
+    public List<LeaveRequestRes> getAllLeaveByEmployee(){
+
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your session expired"));
+
+        if(user.is_deleted()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is deleted");
+        }
+
+        EmployeeEntity employee = user.getEmployee();
+
+        List<LeaveRequest> leaveRequests = leaveRequestRepository.findByEmployee(employee);
+
+        return leaveRequests.stream().map(this::toLeaveRequestResponse).collect(Collectors.toList());
+
+    }
+
+    public LeaveRequestRes toLeaveRequestResponse(LeaveRequest leave) {
 
         List<LeaveApprovalRes> leaveApprovalResList = leave.getApprovers().stream()
                 .map(leaveApproval -> LeaveApprovalRes.builder()
@@ -129,6 +150,7 @@ public class LeaveRequestService {
 
         return LeaveRequestRes.builder()
                 .id(leave.getId())
+                .NIK(leave.getEmployee().getNIK())
                 .nama(leave.getEmployee().getName())
                 .startDate(leave.getStartDate())
                 .endDate(leave.getEndDate())
@@ -139,54 +161,60 @@ public class LeaveRequestService {
                 .build();
     }
 
-    @Transactional
-    public void processLeaveRequestApproval(Long leaveRequestId) {
-        LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveRequestId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Leave Request not found"));
-
-        List<LeaveApproval> approvals = leaveApprovalRepository.findByLeaveRequest(leaveRequest);
-
-        boolean allApproved = approvals.stream().allMatch(a -> "Approved".equals(a.getStatus()));
-        boolean anyNotApproved = approvals.stream().anyMatch(a -> "Not Approved".equals(a.getStatus()));
+    public void processLeaveRequest(LeaveRequest request1) {
+        boolean allApproved = request1.getApprovers().stream()
+                .allMatch(app -> "Approved".equals(app.getStatus()));
+        boolean anyNotApproved = request1.getApprovers().stream()
+                .anyMatch(app -> "Not Approved".equals(app.getStatus()));
 
         if (anyNotApproved) {
-            leaveRequest.setStatus("Not Approved");
+            request1.setStatus("Not Approved");
         } else if (allApproved) {
-            int leaveDays = calculateEffectiveLeaveDays(leaveRequest.getStartDate(), leaveRequest.getEndDate());
-            leaveRequest.setStatus("Approved");
-            deductLeaveBalance(leaveRequest.getEmployee(), leaveDays);
+            request1.setStatus("Approved");
+            int leaveDays = calculateLeaveDays(request1.getStartDate(), request1.getEndDate());
+            request1.setJumlahCuti(leaveDays);
+
+            EmployeeAnnual employeeAnnual = request1.getLeaveAnnual();
+            if (employeeAnnual != null) {
+                employeeAnnual.setSisaCuti(employeeAnnual.getSisaCuti() - leaveDays);
+                employeeAnnualRepository.save(employeeAnnual);
+            }
         }
-        leaveRequestRepository.save(leaveRequest);
+        leaveRequestRepository.save(request1);
     }
 
-    private int calculateEffectiveLeaveDays(LocalDate startDate, LocalDate endDate) {
+    private int calculateLeaveDays(LocalDate startDate, LocalDate endDate) {
         int count = 0;
         LocalDate date = startDate;
-
         while (!date.isAfter(endDate)) {
-            boolean isWeekend = date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
-            boolean isCompanyHoliday = companyCalendarRepository.existsByStartDateLessThanEqualAndEndDateGreaterThanEqual(date, date);
-            boolean isFreeEvent = companyEventRepository.existsFreeEventOnDate(date);;
-
-            if (!isWeekend && !isCompanyHoliday && !isFreeEvent) {
-                count++;
+            if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                boolean isFree = companyCalendarRepository.existsByStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsFreeTrue(date, date);
+                if (!isFree) {
+                    count++;
+                }
             }
             date = date.plusDays(1);
         }
         return count;
     }
 
+    @Transactional
+    public LeaveRequestRes updateLeaveApproval(LeaveApprovalProcess request) {
+        LeaveRequest request1 = leaveRequestRepository.findFirstById(request.getRequestId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 
+        List<LeaveApproval> approvals = leaveApprovalRepository.findByLeaveRequestAndApprover_NIK(request1, request.getNikApprover());
 
-    private void deductLeaveBalance(EmployeeEntity employee, int days) {
-        EmployeeAnnual leaveBalance = employeeAnnualRepository.findByEmployee(employee)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee leave balance not found"));
-
-        if (leaveBalance.getSisaCuti() >= days) {
-            leaveBalance.setSisaCuti(leaveBalance.getSisaCuti() - days);
-            employeeAnnualRepository.save(leaveBalance);
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient leave balance");
+        if (approvals.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
         }
+
+        approvals.forEach(approval -> approval.setStatus(request.getStatus()));
+        leaveApprovalRepository.saveAll(approvals);
+
+
+        processLeaveRequest(request1);
+
+        return toLeaveRequestResponse(request1);
     }
 }

@@ -22,14 +22,6 @@ public class EmployeeAnnual {
     @Column(name = "id_jatahCuti")
     private Long id;
 
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(
-//            name = "employee_annual_leave",
-//            joinColumns = @JoinColumn(name = "id_jatahCuti"),
-//            inverseJoinColumns = @JoinColumn(name = "id_CompanyLeave")
-//    )
-//    private List<CompanyLeave> companyLeave = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "employee", referencedColumnName = "NIK", nullable = true)
     private EmployeeEntity employee;
@@ -39,13 +31,5 @@ public class EmployeeAnnual {
     private CompanyLeave companyLeave;
 
     private Integer sisaCuti;
-
-
-
-//    @ElementCollection
-//    @CollectionTable(name = "employee_sisa_cuti", joinColumns = @JoinColumn(name = "id_jatahCuti"))
-//    @Column(name = "sisa_cuti")
-//    private List<Long> sisaCuti = new ArrayList<>();
-
 
 }
