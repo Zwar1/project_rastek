@@ -2,7 +2,6 @@ package com.example.userCrud.Service;
 
 import com.example.userCrud.Dto.CompanyEventReq;
 import com.example.userCrud.Dto.CompanyEventRes;
-import com.example.userCrud.Entity.CompanyCalendar;
 import com.example.userCrud.Entity.CompanyEvent;
 import com.example.userCrud.Repository.CompanyEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
