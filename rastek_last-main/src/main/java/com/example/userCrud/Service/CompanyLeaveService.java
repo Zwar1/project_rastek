@@ -39,6 +39,25 @@ public class CompanyLeaveService {
         return toCompanyLeaveRes(companyLeave);
     }
 
+    @Transactional
+    public CompanyLeaveRes update(Long id, CompanyLeaveReq request) {
+        CompanyLeave companyLeave = companyLeaveRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Leave not found"));
+
+        validationService.validate(request);
+
+        if (request.getJatahawal() != null) {
+            companyLeave.setJatahawal(request.getJatahawal());
+            companyLeaveRepository.save(companyLeave);
+        }
+        if (request.getNamaCuti() != null) {
+            companyLeave.setJenisCuti(request.getNamaCuti());
+            companyLeaveRepository.save(companyLeave);
+        }
+
+        return toCompanyLeaveRes(companyLeave);
+    }
+
     @Transactional(readOnly = true)
     public List<CompanyLeaveRes> getAllCompanyLeaveWithInfo() {
         List<CompanyLeave> companyLeaves = companyLeaveRepository.findAll();
@@ -60,6 +79,7 @@ public class CompanyLeaveService {
         return CompanyLeaveRes.builder()
                 .id(leave.getId())
                 .namaCuti(leave.getJenisCuti())
+                .jatahawal(leave.getJatahawal())
                 .build();
     }
 

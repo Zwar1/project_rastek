@@ -127,6 +127,14 @@ public class ProjectTaskService {
     }
 
     @Transactional
+    public List<ProjectTaskRes> getAllProjectTask(Long projectId) {
+        List<ProjectTask> tasks = projectTaskRepository.findByProject_Id(projectId);
+        return tasks.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public ProjectTaskRes updateTask(Long id, ProjectTaskReq req) {
         ProjectTask taskEntity = projectTaskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));

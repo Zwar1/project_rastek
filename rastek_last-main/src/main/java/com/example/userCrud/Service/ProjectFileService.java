@@ -66,12 +66,12 @@ public class ProjectFileService {
         }
 
         try {
-            // Create file directory if it doesn't exist'
+            // Create file directory if it doesn't exist
             String filePath = uploadDir + "/" + projectEntity.getId();
             Path path = Paths.get(filePath);
             Files.createDirectories(path);
 
-            // Generate unique file name
+            // Generate unique file name, change to name and uploader's ID (employee's NIK) later if needed
             String originalFileName = StringUtils.cleanPath(req.getFile().getOriginalFilename());
             String fileName = System.currentTimeMillis() + "_" + originalFileName;
 
@@ -105,9 +105,12 @@ public class ProjectFileService {
     private ProjectFileRes mapToResponse(ProjectFile file){
         return ProjectFileRes.builder()
                 .id(file.getId())
+                .project_id(file.getProject().getId())
                 .fileName(file.getFileName())
+                .filePath(file.getFilePath())
                 .uploaderName(file.getUploaderName())
                 .uploaderType(file.getUploaderType())
+                .uploader_id(file.getUploaderId())
                 .uploadedOn(file.getUploadedOn())
                 .build();
     }

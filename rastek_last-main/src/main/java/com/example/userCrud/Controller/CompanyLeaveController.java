@@ -44,6 +44,14 @@ public class CompanyLeaveController {
         return web_response.<CompanyLeaveRes>builder().data(companyLeaveRes).build();
     }
 
-
+    @PutMapping(
+            path = "/api/updateJenisCuti/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<CompanyLeaveRes> update(@PathVariable("id") Long id, @RequestBody CompanyLeaveReq request) {
+        CompanyLeaveRes companyLeaveRes = companyLeaveService.update(id, request);
+        return web_response.<CompanyLeaveRes>builder().data(companyLeaveRes).build();
+    }
 }
 

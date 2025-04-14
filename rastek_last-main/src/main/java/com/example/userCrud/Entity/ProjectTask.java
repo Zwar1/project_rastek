@@ -54,4 +54,8 @@ public class ProjectTask {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private ProjectEntity project;
+
+    public Long getProjectId() {
+        return project.getId();
+    }
 }

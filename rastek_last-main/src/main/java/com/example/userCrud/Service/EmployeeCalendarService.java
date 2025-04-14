@@ -138,11 +138,24 @@ public class EmployeeCalendarService {
         employeeCalendarRepository.delete(calendar);
     }
 
-    @Transactional
-    public EmployeeCalendarRes getCalendarByNIK(Long nik) {
-        EmployeeCalendar calendar = employeeCalendarRepository.findByEmployeeNIK(nik)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee's Schedule not found"));
+    @Transactional(readOnly = true)
+    public List<EmployeeCalendarRes>  getCalendarByNIK(Long nik) {
+        EmployeeEntity employee = employeeRepository.findFirstByNIK(nik)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 
-        return toEmployeeCalendarResponse(calendar);
+        List<EmployeeCalendarRes> calendarList = employee.getCalendars().stream()
+                .map(calendar -> EmployeeCalendarRes.builder()
+                        .idEmployeeCalendar(calendar.getId())
+                        .idEmployeeEvent(calendar.getEmployeeEvent().getId())
+                        .nameEvent(calendar.getEmployeeEvent().getEventName())
+                        .startDate(calendar.getStartDate())
+                        .endDate(calendar.getEndDate())
+                        .isCuti(calendar.getEmployeeEvent().getIsCuti())
+                        .description(calendar.getDescription())
+                        .NIK(employee.getNIK())
+                        .build()
+                ).toList();
+
+        return calendarList;
     }
 }

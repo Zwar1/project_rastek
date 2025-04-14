@@ -14,4 +14,6 @@ public class CompanyLeaveRes {
     private Long id;
 
     private String namaCuti;
+
+    private Integer jatahawal;
 }

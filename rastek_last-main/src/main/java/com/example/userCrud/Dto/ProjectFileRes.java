@@ -14,8 +14,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProjectFileRes {
     private Long id;
+    private Long project_id;
+    private Long uploader_id;
     private String fileName;
     private String uploaderName;
+    private String filePath;
     private ProjectFile.UploaderType uploaderType;
     private LocalDateTime uploadedOn;
 }

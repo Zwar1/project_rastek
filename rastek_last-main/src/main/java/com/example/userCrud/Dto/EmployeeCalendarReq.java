@@ -14,6 +14,8 @@ import java.time.temporal.ChronoUnit;
 @NoArgsConstructor
 @Builder
 public class EmployeeCalendarReq {
+    private Long idEmployeeCalendar;
+
     private Long idEmployeeEvent;
 
     private LocalDateTime startDate;

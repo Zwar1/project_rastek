@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -136,6 +137,23 @@ public class EmployeeController {
     public ResponseEntity<List<EmployeeRes>> getEmployeeJPU() {
         List<EmployeeRes> employeeJPU = employeeService.getEmployeeWithJPU();
         return ResponseEntity.ok(employeeJPU);
+    }
+
+    @PutMapping("/{NIK}/attendance")
+    public ResponseEntity<EmployeeRes> updateAttendance(
+            @PathVariable Long NIK,
+            @RequestParam LocalDateTime checkIn,
+            @RequestParam LocalDateTime checkOut,
+            @RequestParam String workLocation,
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam String attendanceStatus) {
+
+        EmployeeRes updatedEmployee = employeeService.updateLastAttendance(
+                NIK, checkIn, checkOut, workLocation, latitude, longitude, attendanceStatus
+        );
+
+        return ResponseEntity.ok(updatedEmployee);
     }
 }
 

@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @AllArgsConstructor
@@ -59,6 +60,28 @@ public class EmployeeEntity {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "pin")
+    private String pin;
+
+    // 🔹 Field Baru untuk Menyimpan Check-in dan Check-out Terakhir
+    @Column(name = "last_check_in")
+    private LocalDateTime lastCheckIn;
+
+    @Column(name = "last_check_out")
+    private LocalDateTime lastCheckOut;
+
+    @Column(name = "last_work_location")
+    private String lastWorkLocation;
+
+    @Column(name = "last_latitude")
+    private Double lastLatitude;
+
+    @Column(name = "last_longitude")
+    private Double lastLongitude;
+
+    @Column(name = "attendance_status")
+    private String attendanceStatus; // Attendance status (Attend / Absent)
+
     // Relasi OneToMany dengan Riwayat Jabatan
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "employee_nik", referencedColumnName = "NIK", nullable = false)
@@ -95,6 +118,9 @@ public class EmployeeEntity {
     // Relasi OneToMany dengan CV
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CVEntity> cv = new ArrayList<>();
+
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    private List<EmployeeCalendar> calendars = new ArrayList<>();
 
     @ManyToMany(mappedBy = "member")
     private List<ProjectEntity> projects;

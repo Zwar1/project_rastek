@@ -30,11 +30,12 @@ public class EmployeeCalendarController {
     }
 
     @GetMapping("/api/getEmployeeCalendar/{nik}")
-    public web_response<EmployeeCalendarRes> getCalendarById(@PathVariable Long nik) {
-        EmployeeCalendarRes employeeCalendarRes = employeeCalendarService.getCalendarByNIK(nik);
-        return web_response.<EmployeeCalendarRes>builder()
-                .data(employeeCalendarRes)
-                .message("Employee's calendar and schedule successfully fetched")
+    public web_response<List<EmployeeCalendarRes>> getCalendarByNik(@PathVariable Long nik) {
+        List<EmployeeCalendarRes> calendars = employeeCalendarService.getCalendarByNIK(nik);
+        return web_response.<List<EmployeeCalendarRes>>builder()
+                .data(calendars)
+                .message("Success")
+                .error(null)
                 .build();
     }
 

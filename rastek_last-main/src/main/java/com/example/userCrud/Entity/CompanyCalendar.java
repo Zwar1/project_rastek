@@ -29,6 +29,8 @@ public class CompanyCalendar {
 
     private String description;
 
+    private Boolean isFree;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "id_event", referencedColumnName = "id_companyEvent", nullable = true)
     private CompanyEvent companyEvent;

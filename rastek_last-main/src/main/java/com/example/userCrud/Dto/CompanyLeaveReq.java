@@ -11,4 +11,6 @@ import lombok.*;
 public class CompanyLeaveReq {
 
     private String namaCuti;
+
+    private Integer jatahawal;
 }

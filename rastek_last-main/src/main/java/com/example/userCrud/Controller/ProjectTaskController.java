@@ -46,6 +46,15 @@ public class ProjectTaskController {
         return web_response.<List<ProjectTaskRes>>builder().data(response).build();
     }
 
+    @GetMapping(
+            path = "/api/project/{projectId}/getAllTasks",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<List<ProjectTaskRes>> getAllProjectTask(@PathVariable("projectId") Long projectId) {
+        List<ProjectTaskRes> response = projectTaskService.getAllProjectTask(projectId);
+        return web_response.<List<ProjectTaskRes>>builder().data(response).build();
+    }
+
     @PutMapping(
             path = "/api/project/updateTask/{taskId}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
