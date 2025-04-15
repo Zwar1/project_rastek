@@ -396,7 +396,7 @@ public class EmployeeService {
         validationService.validate(request);
 
         EmployeeEntity employeeEntity = employeeRepository.findFirstByNIK(request.getNIK())
-               .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 
         if (Objects.nonNull(request.getNoTelp()) && !request.getNoTelp().isEmpty()) {
             employeeEntity.setNoTelp(request.getNoTelp());
@@ -449,7 +449,7 @@ public class EmployeeService {
 
         // Urutkan berdasarkan sequence kodeJabatan dan joinDate
         employeeEntities.sort(Comparator.comparing((EmployeeEntity e) -> e.getRiwayatJabatan().stream()
-                        .map(r -> r.getKode_jabatan().getSequence())
+                        .map(r -> r.getId_jabatan().getSequence())
                         .min(Long::compareTo) // Ambil sequence terkecil jika karyawan memiliki beberapa riwayat jabatan
                         .orElse(Long.MAX_VALUE))
                 .thenComparing(EmployeeEntity::getTanggalLahir));
@@ -460,40 +460,32 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-
     private EmployeeRes toEmployeeResponse(EmployeeEntity employeeEntity) {
         // Early return if employee is null
         if (employeeEntity == null) {
             return null;
         }
 
-        // Handle RiwayatJabatan mapping with null checks
-        List<RiwayatJabatanRes> riwayatJabatanResList = Optional.ofNullable(employeeEntity.getRiwayatJabatan())
-                .map(riwayatList -> riwayatList.stream()
-                        .map(riwayatJabatan -> RiwayatJabatanRes.builder()
-                                .id_riwayat(riwayatJabatan.getId())
-                                .statusKontrak(riwayatJabatan.getStatusKontrak())
-                                .tmt_awal(riwayatJabatan.getTmt_mulai())
-                                .tmt_akhir(riwayatJabatan.getTmt_akhir())
-                                .kontrakKedua(riwayatJabatan.getKontrakKedua())
-                                .salary(riwayatJabatan.getSalary())
-                                .kodeJabatan(Optional.ofNullable(riwayatJabatan.getKode_jabatan())
-                                        .map(jabatan -> JabatanRes.builder()
-                                                .kodeJabatan(jabatan.getKodeJabatan())
-                                                .namaJabatan(jabatan.getNamaJabatan())
-                                                .isAtasan(jabatan.isAtasan())
-                                                .sequence(jabatan.getSequence())
-                                                .departement(Optional.ofNullable(jabatan.getDepartementEntity())
-                                                        .map(DepartementEntity::getDepartement_name)
-                                                        .orElse(null))
-                                                .division(Optional.ofNullable(jabatan.getDivisionEntity())
-                                                        .map(DivisionEntity::getDivision_name)
-                                                        .orElse(null))
-                                                .build())
-                                        .orElse(null))
+        List<RiwayatJabatanRes> riwayatJabatanResList = employeeEntity.getRiwayatJabatan().stream()
+                .map(riwayatJabatan -> RiwayatJabatanRes.builder()
+                        .id_riwayat(riwayatJabatan.getId())
+                        .statusKontrak(riwayatJabatan.getStatusKontrak())
+                        .tmt_awal(riwayatJabatan.getTmt_mulai())
+                        .tmt_akhir(riwayatJabatan.getTmt_akhir())
+                        .kontrakKedua(riwayatJabatan.getKontrakKedua())
+                        .salary(riwayatJabatan.getSalary())
+                        .kodeJabatan(JabatanRes.builder()
+                                .kodeJabatan(riwayatJabatan.getId_jabatan().getKodeJabatan())
+                                .namaJabatan(riwayatJabatan.getId_jabatan().getNamaJabatan())
+                                .isAtasan(riwayatJabatan.getId_jabatan().isAtasan())
+                                .sequence(riwayatJabatan.getId_jabatan().getSequence())
+                                .departement(riwayatJabatan.getId_jabatan().getDepartementEntity() != null
+                                        ? riwayatJabatan.getId_jabatan().getDepartementEntity().getDepartement_name() : null)
+                                .division(riwayatJabatan.getId_jabatan().getDivisionEntity() != null
+                                        ? riwayatJabatan.getId_jabatan().getDivisionEntity().getDivision_name() : null)
                                 .build())
-                        .toList())
-                .orElse(Collections.emptyList());
+                        .build())
+                .toList();
 
         // Handle Attachment mapping with null checks
         List<AttachmentRes> attachmentResList = Optional.ofNullable(employeeEntity.getAttachment())
