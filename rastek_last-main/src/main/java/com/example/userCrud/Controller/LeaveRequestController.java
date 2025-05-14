@@ -5,16 +5,21 @@ import com.example.userCrud.Service.LeaveRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class LeaveRequestController {
+    private static final String LEAVES_APPROVAL_ADD = "LEAVES:APPROVAL:ADD";
+    private static final String LEAVES_LEAVE_REQUEST_ADD = "LEAVES:LEAVE REQUEST:ADD";
+    private static final String LEAVES_LEAVE_REQUEST_VIEW = "LEAVES:LEAVE REQUEST:VIEW";
 
     @Autowired
     LeaveRequestService leaveRequestService;
 
+    @PreAuthorize("hasAuthority('" + LEAVES_LEAVE_REQUEST_ADD + "')")
     @PostMapping(
             path = "/api/addLeaveRequest",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -25,6 +30,7 @@ public class LeaveRequestController {
         return web_response.<LeaveRequestRes>builder().data(leaveRequestRes).build();
     }
 
+    @PreAuthorize("hasAuthority('" + LEAVES_LEAVE_REQUEST_VIEW + "')")
     @GetMapping(
             path = "/api/getLeaveRequest/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -34,6 +40,7 @@ public class LeaveRequestController {
         return web_response.<LeaveRequestRes>builder().data(leaveRequestRes).build();
     }
 
+    @PreAuthorize("hasAuthority('" + LEAVES_LEAVE_REQUEST_VIEW + "')")
     @GetMapping(
             path = "/api/getAllRequestWithInfo",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -43,7 +50,7 @@ public class LeaveRequestController {
         return ResponseEntity.ok(leaveRequestRes);
     }
 
-
+    @PreAuthorize("hasAuthority('" + LEAVES_LEAVE_REQUEST_VIEW + "')")
     @GetMapping(
             path = "/api/getLeaveByEmployee",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -53,6 +60,7 @@ public class LeaveRequestController {
         return ResponseEntity.ok(leaveRequests);
     }
 
+    @PreAuthorize("hasAuthority('" + LEAVES_APPROVAL_ADD + "')")
     @PutMapping(
             path = "/api/updateApproval/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,

@@ -40,7 +40,7 @@ public class ProjectTaskService {
         projectTask.setDescription(req.getDescription());
         projectTask.setStartDate(req.getStartDate());
         projectTask.setEndDate(req.getEndDate());
-        projectTask.setProgress(0);
+        projectTask.setProgress(req.getProgress() != null ? req.getProgress() : 0);
         projectTask.setOnHold(req.isOnHold());
 
         ProjectEntity project = projectRepository.findById(projectId)

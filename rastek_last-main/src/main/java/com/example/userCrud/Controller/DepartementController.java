@@ -5,18 +5,23 @@ import com.example.userCrud.Entity.DepartementEntity;
 import com.example.userCrud.Service.DepartementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class DepartementController {
+    private static final String COMPANY_DEPARTMENT_ADD = "COMPANY:DEPARTMENT:ADD";
+    private static final String COMPANY_DEPARTMENT_VIEW = "COMPANY:DEPARTMENT:VIEW";
+    private static final String COMPANY_DEPARTMENT_EDIT = "COMPANY:DEPARTMENT:EDIT";
 
     @Autowired
     private DepartementService departementService;
 
 
     //Post API
+    @PreAuthorize("hasAuthority('" + COMPANY_DEPARTMENT_ADD + "')")
     @PostMapping(
             path = "/api/addDepartement",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -28,6 +33,7 @@ public class DepartementController {
     }
 
     //Get API
+    @PreAuthorize("hasAuthority('" + COMPANY_DEPARTMENT_VIEW + "')")
     @GetMapping(
             path = "/api/addDepartement/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -37,6 +43,7 @@ public class DepartementController {
         return web_response.<DepartementRes>builder().data(departementRes).build();
     }
 
+    @PreAuthorize("hasAuthority('" + COMPANY_DEPARTMENT_VIEW + "')")
     @GetMapping(
             path = "/api/getDepartement",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -46,6 +53,7 @@ public class DepartementController {
     }
 
     //Put API
+    @PreAuthorize("hasAuthority('" + COMPANY_DEPARTMENT_EDIT + "')")
     @PutMapping(
             path = "/api/addDepartement/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -58,6 +66,7 @@ public class DepartementController {
         return web_response.<DepartementRes>builder().data(departementRes).build();
     }
 
+    @PreAuthorize("hasAuthority('" + COMPANY_DEPARTMENT_EDIT + "')")
     @DeleteMapping(
             path = "/api/deleteDepartement/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE

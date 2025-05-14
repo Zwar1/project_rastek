@@ -1,27 +1,30 @@
 package com.example.userCrud.Controller;
 
-import com.example.userCrud.Dto.ClientRes;
+import com.example.userCrud.Dto.ChangeProjectStatusReq;
 import com.example.userCrud.Dto.ProjectReq;
 import com.example.userCrud.Dto.ProjectRes;
 import com.example.userCrud.Dto.web_response;
-import com.example.userCrud.Entity.ProjectEntity;
 import com.example.userCrud.Service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
 public class ProjectController {
+    private static final String CLIENTS_PROJECT_VIEW = "CLIENTS:PROJECT:VIEW";
+    private static final String CLIENTS_PROJECT_ADD = "CLIENTS:PROJECT:ADD";
+    private static final String CLIENTS_PROJECT_DETAILS_VIEW = "CLIENTS:PROJECT DETAILS:VIEW";
+    private static final String CLIENTS_PROJECT_DETAILS_EDIT = "CLIENTS:PROJECT DETAILS:EDIT";
+    private static final String CLIENTS_PROJECT_STATUS_EDIT = "CLIENTS:PROJECT STATUS:EDIT";
+
     @Autowired
     ProjectService projectService;
-    private ProjectRes projectRes;
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_PROJECT_ADD + "')")
     @PostMapping("/api/create/project")
     public web_response<ProjectRes> createProject(
             @RequestBody ProjectReq request
@@ -33,6 +36,7 @@ public class ProjectController {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_PROJECT_DETAILS_VIEW + "')")
     @GetMapping(
             path = "/api/get/project/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -45,6 +49,7 @@ public class ProjectController {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_PROJECT_VIEW + "')")
     @GetMapping(
             path = "/api/get/project",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -80,6 +85,7 @@ public class ProjectController {
 //                .build();
 //    }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_PROJECT_DETAILS_EDIT + "')")
     @PutMapping(
             path = "/api/update/project/{id}"
     )
@@ -91,6 +97,19 @@ public class ProjectController {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_PROJECT_STATUS_EDIT + "')")
+    @PutMapping(
+            path = "/api/update/project/{id}/status"
+    )
+    public web_response<ProjectRes> updateProjectStatus(@PathVariable Long id, @RequestBody ChangeProjectStatusReq request) {
+        ProjectRes projectRes = projectService.updateProjectStatus(id, request);
+        return web_response.<ProjectRes>builder()
+                .data(projectRes)
+                .message("Project's Status successfully updated")
+                .build();
+    }
+
+    @PreAuthorize("hasAuthority('" + CLIENTS_PROJECT_DETAILS_EDIT + "')")
     @DeleteMapping("/api/delete/project/{id}")
     public web_response<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);

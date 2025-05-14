@@ -1,7 +1,10 @@
 package com.example.userCrud.Dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Set;
 
+import com.example.userCrud.Entity.PermissionsEntity;
+import com.example.userCrud.Entity.RolePermissionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,17 +19,11 @@ public class RoleResponse {
     private Long id;
 
     private String name;
-    private String description;
-    private Date created_at;
-    private Date updated_at;
+    private String status;
+    private Set<PermissionsEntity> permissions;
+    private Integer version;
     private String created_by;
-    private String updated_by;
-
-    public String getUpdated_by() {
-        if (updated_by == null) {
-            return updated_by = "There is no update yet";
-        }
-        return updated_by;
-    }
-
+    private String updatedBy;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

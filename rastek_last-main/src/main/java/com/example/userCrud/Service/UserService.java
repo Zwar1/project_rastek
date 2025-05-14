@@ -1,8 +1,7 @@
 package com.example.userCrud.Service;
 
 import com.example.userCrud.Dto.*;
-import com.example.userCrud.Entity.EmployeeEntity;
-import com.example.userCrud.Entity.Roles;
+import com.example.userCrud.Entity.*;
 import com.example.userCrud.Repository.EmployeeRepository;
 import com.example.userCrud.Repository.RolesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.userCrud.Entity.User;
 import com.example.userCrud.Hash.BCrypt;
 import com.example.userCrud.Repository.UserRepository;
 
@@ -93,7 +91,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserResponse addRole(AddRoleRequest request) {
+    public UserResponse addRole(Long id, AddRoleRequest request) {
         validationService.validate(request);
 
         Roles roles = rolesRepository.findFirstById(request.getRoleId())
@@ -102,7 +100,7 @@ public class UserService implements UserDetailsService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
-        User user = userRepository.findByUsername(currentUsername)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
 
         if (user.is_deleted()) {
@@ -264,10 +262,16 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        // Initialize the roles to avoid LazyInitializationException
-        List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-                .map(Roles::getName)
-                .map(SimpleGrantedAuthority::new)
+        // Load the user's roles
+        List<Roles> roles = user.getRoles();
+
+        // Extract permissions from roles
+        List<SimpleGrantedAuthority> authorities = roles.stream()
+                .flatMap(role -> role.getPermissions().stream()
+                        .map(RolePermissionEntity::getPermission)
+                )
+                .map(PermissionsEntity::getPermissionKey) // Extract permission key
+                .map(SimpleGrantedAuthority::new) // Convert to GrantedAuthority
                 .collect(Collectors.toList());
 
         return new org.springframework.security.core.userdetails.User(
@@ -276,5 +280,4 @@ public class UserService implements UserDetailsService {
                 authorities
         );
     }
-
 }

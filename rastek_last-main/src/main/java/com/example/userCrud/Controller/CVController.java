@@ -7,13 +7,18 @@ import com.example.userCrud.Dto.web_response;
 import com.example.userCrud.Service.CVService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class CVController {
+    private static final String AUTHORITY_ALL = "EMPLOYEES:CV:ALL";
+    private static final String AUTHORITY_VIEW_ONLY = "EMPLOYEES:CV:VIEW";
+
     @Autowired
     private CVService cvService;
 
+    @PreAuthorize("hasAuthority('" + AUTHORITY_ALL + "')")
     @PostMapping(
             path = "/api/employee/{nik}/addCV",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -25,7 +30,7 @@ public class CVController {
         return web_response.<CVRes>builder().data(cvRes).build();
     }
 
-
+    @PreAuthorize("hasAuthority('" + AUTHORITY_ALL + "') || hasAuthority('" + AUTHORITY_VIEW_ONLY + "')")
     @GetMapping(
             path = "/api/employee/{nik}",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -35,6 +40,7 @@ public class CVController {
         return web_response.<EmployeeCVRes>builder().data(response).build();
     }
 
+    @PreAuthorize("hasAuthority('" + AUTHORITY_ALL + "')")
     @DeleteMapping(
             path = "/api/employee/{nik}/deleteCV/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE

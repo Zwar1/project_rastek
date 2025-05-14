@@ -26,7 +26,6 @@ public class ProjectTaskReq {
     private LocalDate endDate;
     private String description;
 
-    @NotNull
     @Min(0)
     @Max(100)
     private Integer progress;

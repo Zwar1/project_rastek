@@ -4,11 +4,13 @@ import com.example.userCrud.Dto.*;
 import com.example.userCrud.Service.EmployeeEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasAuthority('CALENDAR:PERSONAL CALENDAR:ALL')")
 public class EmployeeEventController {
     @Autowired
     private EmployeeEventService employeeEventService;

@@ -4,16 +4,21 @@ import com.example.userCrud.Dto.*;
 import com.example.userCrud.Service.DivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class DivisionController {
+    private static final String COMPANY_DIVISION_ADD = "COMPANY:DIVISION:ADD";
+    private static final String COMPANY_DIVISION_VIEW = "COMPANY:DIVISION:VIEW";
+    private static final String COMPANY_DIVISION_EDIT = "COMPANY:DIVISION:EDIT";
 
     @Autowired
     DivisionService divisionService;
 
+    @PreAuthorize("hasAuthority('" + COMPANY_DIVISION_ADD + "')")
     @PostMapping(
             path = "/api/addDivision",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -24,7 +29,7 @@ public class DivisionController {
         return web_response.<DivisionRes>builder().data(divisionRes).build();
     }
 
-
+    @PreAuthorize("hasAuthority('" + COMPANY_DIVISION_VIEW + "')")
     @GetMapping(
             path = "/api/addDivision/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -34,6 +39,7 @@ public class DivisionController {
         return web_response.<DivisionRes>builder().data(divisionRes).build();
     }
 
+    @PreAuthorize("hasAuthority('" + COMPANY_DIVISION_VIEW + "')")
     @GetMapping(
             path = "/api/getDivision",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -43,6 +49,7 @@ public class DivisionController {
     }
 
     //Put API
+    @PreAuthorize("hasAuthority('" + COMPANY_DIVISION_EDIT + "')")
     @PutMapping(
             path = "/api/addDivision/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -55,6 +62,7 @@ public class DivisionController {
         return web_response.<DivisionRes>builder().data(divisionRes).build();
     }
 
+    @PreAuthorize("hasAuthority('" + COMPANY_DIVISION_EDIT + "')")
     @DeleteMapping(
             path = "/api/deleteDivision/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE

@@ -46,11 +46,11 @@ public class UserController {
         return userService.getAllUser();
     }
 
-    @PatchMapping("/addRole")
-    public web_response<UserResponse> AddRole(@RequestBody AddRoleRequest request){
-        UserResponse addRoleUserResponse = userService.addRole(request);
-        return web_response.<UserResponse>builder().data(addRoleUserResponse).message("Success").build();
-    }
+//    @PatchMapping("/addRole")
+//    public web_response<UserResponse> AddRole(@RequestBody AddRoleRequest request){
+//        UserResponse addRoleUserResponse = userService.addRole(request);
+//        return web_response.<UserResponse>builder().data(addRoleUserResponse).message("Success").build();
+//    }
 
     @PutMapping("/update/user/{userId}")
     public web_response<UserResponse> updateUser(
@@ -73,6 +73,15 @@ public class UserController {
     public web_response<String> Delete(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return web_response.<String>builder().message("Success").build();
+    }
+
+    @PatchMapping("/update/user/{userId}/addRole")
+    public web_response<UserResponse> assignRole(@PathVariable("userId") Long userId, @RequestBody AddRoleRequest roleReq) {
+        UserResponse assignRoleToUser = userService.addRole(userId, roleReq);
+        return web_response.<UserResponse>builder()
+                .data(assignRoleToUser)
+                .message("Role assigned successfully")
+                .build();
     }
 
 }

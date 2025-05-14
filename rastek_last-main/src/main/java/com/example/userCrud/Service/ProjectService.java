@@ -258,6 +258,25 @@ public class ProjectService {
     }
 
     @Transactional
+    public ProjectRes updateProjectStatus(Long id, ChangeProjectStatusReq req) {
+        ProjectEntity project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
+
+//        ProjectReq validationReq = ProjectReq.builder()
+//                .status(req.getStatus() != null ? req.getStatus() : project.getStatus())
+//                .build();
+//
+//        validationService.validate(validationReq);
+
+        if (req.getStatus() != null) {
+            project.setStatus(req.getStatus());
+            projectRepository.save(project);
+        }
+
+        return toProjectResponse(project);
+    }
+
+    @Transactional
     public void deleteProject(Long id) {
         ProjectEntity project = projectRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));

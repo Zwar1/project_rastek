@@ -1,6 +1,5 @@
 package com.example.userCrud.Dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AddRoleRequest {
-    @NotNull(message = "Role ID is required")
-    private Long roleId;
+public class RolePermissionRes {
+  //  private Long id;
+    private Long rolesId;
+    private Long permissionsId;
+    private boolean isAllowed;
+    private String permissionKey;
 }

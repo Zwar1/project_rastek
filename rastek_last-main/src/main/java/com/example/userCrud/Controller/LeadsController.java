@@ -7,6 +7,7 @@ import com.example.userCrud.Dto.web_response;
 import com.example.userCrud.Service.LeadsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
@@ -14,10 +15,15 @@ import java.util.List;
 
 @RestController
 public class LeadsController {
+    private static final String CLIENTS_LEADS_VIEW = "CLIENTS:LEADS:VIEW";
+    private static final String CLIENTS_LEADS_ADD = "CLIENTS:LEADS:ADD";
+    private static final String CLIENTS_LEADS_DELETE = "CLIENTS:LEADS:DELETE";
+    private static final String CLIENTS_LEADS_APROVE_OR_REJECT = "CLIENTS:LEADS:APPROVE/REJECT";
 
     @Autowired
     private LeadsService leadsService;
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_LEADS_ADD + "')")
     @PostMapping(path = "/api/create/leads",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
@@ -27,6 +33,7 @@ public class LeadsController {
         return web_response.<LeadsRes>builder().data(leadsRes).message("Success").build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_LEADS_APROVE_OR_REJECT + "')")
     @PatchMapping(
             path = "/api/update/accepted/{leadsId}"
     )
@@ -35,6 +42,7 @@ public class LeadsController {
         return web_response.<LeadsRes>builder().data(leadsRes).message("Success").build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_LEADS_APROVE_OR_REJECT + "')")
     @PatchMapping(
             path = "/api/update/rejected/{leadsId}"
     )
@@ -43,6 +51,7 @@ public class LeadsController {
         return web_response.<LeadsRes>builder().data(leadsRes).message("Success").build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_LEADS_VIEW + "')")
     @GetMapping(
             path = "/api/get/all/leads"
     )
@@ -50,6 +59,7 @@ public class LeadsController {
         return leadsService.getAllLeads();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_LEADS_DELETE + "')")
     @DeleteMapping(
             path = "/api/delete/leads/{id}"
     )

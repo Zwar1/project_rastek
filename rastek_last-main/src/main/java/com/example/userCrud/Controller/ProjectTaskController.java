@@ -4,15 +4,23 @@ import com.example.userCrud.Dto.*;
 import com.example.userCrud.Service.ProjectTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class ProjectTaskController {
+    private static final String CLIENTS_TASK_VIEW = "CLIENTS:TASK:VIEW";
+    private static final String CLIENTS_TASK_ADD = "CLIENTS:TASK:ADD";
+    private static final String CLIENTS_TASK_DETAILS_VIEW = "CLIENTS:TASK DETAILS:VIEW";
+    private static final String CLIENTS_TASK_DETAILS_EDIT = "CLIENTS:TASK DETAILS:EDIT";
+   // private static final String CLIENTS_TASK_STATUS_EDIT = "CLIENTS:TASK STATUS:EDIT";
+
     @Autowired
     private ProjectTaskService projectTaskService;
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_TASK_ADD + "')")
     @PostMapping(
             path = "/api/project/{projectId}/addTask",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -28,6 +36,7 @@ public class ProjectTaskController {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_TASK_DETAILS_VIEW + "')")
     @GetMapping(
             path = "/api/project/getTask/{taskId}",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -37,6 +46,7 @@ public class ProjectTaskController {
         return web_response.<ProjectTaskRes>builder().data(response).build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_TASK_VIEW + "')")
     @GetMapping(
             path = "/api/project/getAllTasks",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -46,6 +56,7 @@ public class ProjectTaskController {
         return web_response.<List<ProjectTaskRes>>builder().data(response).build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_TASK_DETAILS_VIEW + "')")
     @GetMapping(
             path = "/api/project/{projectId}/getAllTasks",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -55,6 +66,7 @@ public class ProjectTaskController {
         return web_response.<List<ProjectTaskRes>>builder().data(response).build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_TASK_DETAILS_EDIT + "')")
     @PutMapping(
             path = "/api/project/updateTask/{taskId}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -65,6 +77,7 @@ public class ProjectTaskController {
         return web_response.<ProjectTaskRes>builder().data(updateTaskRes).build();
     }
 
+    @PreAuthorize("hasAuthority('" + CLIENTS_TASK_DETAILS_EDIT + "')")
     @DeleteMapping(
             path = "/api/project/{projectId}/deleteTask/{taskId}",
             produces = MediaType.APPLICATION_JSON_VALUE

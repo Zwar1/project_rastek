@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.userCrud.Entity.Roles;
 
-public interface RolesRepository extends JpaRepository<Roles, Integer>{
+public interface RolesRepository extends JpaRepository<Roles, Long>{
     boolean existsByName(String name);
 
     Optional<Roles> findFirstById(Long id);
+
+    Optional<Roles> findByName(String name);
 }

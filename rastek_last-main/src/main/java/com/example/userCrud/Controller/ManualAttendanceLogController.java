@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,12 +19,22 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/attendance")
 public class ManualAttendanceLogController {
+    private static final String EMPLOYEES_DAILY_STATUS_VIEW = "EMPLOYEES:DAILY STATUS:VIEW";
+    private static final String EMPLOYEES_DAILY_MENU_VIEW = "EMPLOYEES:DAILY MENU:VIEW";
+    private static final String EMPLOYEES_OVERALL_VIEW = "EMPLOYEES:OVERALL ATTENDANCE:VIEW";
+    private static final String EMPLOYEES_OWN_VIEW = "EMPLOYEES:OWN ATTENDANCE:VIEW";
+    private static final String EMPLOYEES_GENERATE_REPORT = "EMPLOYEES:REPORT:GENERATE";
 
     @Autowired
     private ManualAttendanceLogService manualAttendanceLogService;
 
     // Endpoint untuk manual check-in menggunakan body
-    @PostMapping("/check-in")
+    @PostMapping(
+            path = "/check-in",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+
     public ResponseEntity<ManualAttendanceLogResponse> manualCheckIn(@RequestBody ManualAttendanceLogRequest checkInRequest) {
         System.out.println("Received Check-in Request: " + checkInRequest);
 
@@ -71,6 +82,7 @@ public class ManualAttendanceLogController {
     }
 
     // 🔹 API untuk mendapatkan semua log absensi berdasarkan NIK
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_OWN_VIEW + "')")
     @GetMapping("/logs")
     public ResponseEntity<?> getAttendanceLogsByNIK(@RequestParam Long nik) {
         try {
@@ -84,6 +96,7 @@ public class ManualAttendanceLogController {
     }
 
     // 🔹 API untuk mendapatkan log absensi dalam rentang tanggal tertentu berdasarkan NIK
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_OWN_VIEW + "')")
     @GetMapping("/logs/range")
     public ResponseEntity<List<ManualAttendanceLogResponse>> getRangeAttendanceLogs(
             @RequestParam Long nik,
@@ -98,6 +111,7 @@ public class ManualAttendanceLogController {
     }
 
     // 🔹 API untuk mendapatkan log absensi mingguan berdasarkan NIK
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_OWN_VIEW + "')")
     @GetMapping("/logs/weekly")
     public ResponseEntity<List<ManualAttendanceLogResponse>> getWeeklyAttendanceLogs(@RequestParam Long nik) {
         LocalDate startDate = LocalDate.now().minusWeeks(1);
@@ -106,6 +120,7 @@ public class ManualAttendanceLogController {
         return ResponseEntity.ok(manualAttendanceLogService.getAttendanceLogs(nik, startDate, endDate));
     }
 
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_OWN_VIEW + "')")
     @PostMapping("/logs/monthly")
     public ResponseEntity<List<ManualAttendanceLogResponse>> getMonthlyAttendanceLogs(
             @RequestBody ManualAttendanceLogRequest request) {
@@ -158,6 +173,7 @@ public class ManualAttendanceLogController {
 
 
     // 🔹 API untuk mendapatkan log absensi hari ini
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_DAILY_MENU_VIEW + "')")
     @GetMapping("/logs/today")
     public ResponseEntity<List<ManualAttendanceLogResponse>> getTodayAttendanceLogs() {
         try {
@@ -169,6 +185,7 @@ public class ManualAttendanceLogController {
     }
 
     // 🔹 API untuk mendapatkan semua log absensi dalam rentang tanggal tertentu
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_GENERATE_REPORT + "')")
     @GetMapping("/logs/all")
     public ResponseEntity<List<ManualAttendanceLogResponse>> getAllAttendanceLogsInRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -182,6 +199,7 @@ public class ManualAttendanceLogController {
     }
 
     // 🔹 API untuk mendapatkan semua log absensi dalam rentang **mingguan**
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_GENERATE_REPORT + "')")
     @GetMapping("/logs/all/weekly")
     public ResponseEntity<List<ManualAttendanceLogResponse>> getAllWeeklyAttendanceLogs() {
         LocalDate startDate = LocalDate.now().minusWeeks(1);
@@ -191,6 +209,7 @@ public class ManualAttendanceLogController {
     }
 
     // 🔹 API untuk mendapatkan semua log absensi dalam rentang **bulanan**
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_GENERATE_REPORT + "')")
     @GetMapping("/logs/all/monthly")
     public ResponseEntity<List<ManualAttendanceLogResponse>> getAllMonthlyAttendanceLogs() {
         LocalDate startDate = LocalDate.now().minusMonths(1);
@@ -200,6 +219,7 @@ public class ManualAttendanceLogController {
     }
 
     // 🔹 API untuk mendapatkan semua log absensi tanpa filter tanggal
+    @PreAuthorize("hasAuthority('" + EMPLOYEES_OVERALL_VIEW + "')")
     @GetMapping("/logs/data")
     public ResponseEntity<List<ManualAttendanceLogResponse>> getAllAttendanceLogs() {
         try {
