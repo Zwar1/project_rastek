@@ -20,7 +20,8 @@ public class UserResponse {
     private String email;
     private Date created_at;
     private Date updated_at;
-    private List<String> roles;
+    private List<RolesSimpleRes> roles;
+    private List<RolePermissionRes> permissions;
     private String userProfile;
     private EmployeeRes employee;
     private String created_by;

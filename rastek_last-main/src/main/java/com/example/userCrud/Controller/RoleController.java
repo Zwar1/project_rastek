@@ -2,6 +2,7 @@ package com.example.userCrud.Controller;
 
 import com.example.userCrud.Dto.*;
 import com.example.userCrud.Entity.Roles;
+import com.example.userCrud.Service.RolePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +13,16 @@ import java.util.List;
 
 
 @RestController
+@RequestMapping("/api")
 public class RoleController {
 
     @Autowired
     private RoleService roleService;
 
-    @PostMapping(path = "/api/addRoles",
+    @Autowired
+    private RolePermissionService rolePermissionService;
+
+    @PostMapping(path = "/addRoles",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public web_response<RoleResponse> createRole(
@@ -39,7 +44,7 @@ public class RoleController {
                 .build();
     }
 
-    @GetMapping("/get")
+    @GetMapping("/getAllRoles")
     public web_response<List<RoleResponse>> getAllRoles() {
         List<RoleResponse> roles = roleService.getAllRole();
         return web_response.<List<RoleResponse>>builder()
@@ -66,5 +71,11 @@ public class RoleController {
         return web_response.<String>builder()
                 .message("Success")
                 .build();
+    }
+
+
+    @GetMapping("/roles/{roleId}/permissions")
+    public List<RolePermissionRes> getPermissionsForRole(@PathVariable Long roleId) {
+        return rolePermissionService.getPermissionsForRole(roleId);
     }
 }

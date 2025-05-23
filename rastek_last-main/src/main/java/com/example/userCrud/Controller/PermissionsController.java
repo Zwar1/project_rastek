@@ -29,9 +29,12 @@ public class PermissionsController {
 //    @PutMapping
 //    public web_response<PermissionRes editPermission
 
-    @GetMapping
-    public List<PermissionRes> getAllPermission(@RequestBody PermissionReq req) {
-        List<PermissionRes> permissionRes = permissionService.getAllPermissions();
-        return ResponseEntity.ok(permissionRes).getBody();
+    @GetMapping("/api/permissions")
+    public web_response<List<PermissionRes>> getAllPermissions() {
+        List<PermissionRes> permissions = permissionService.getAllPermissions();
+        return web_response.<List<PermissionRes>>builder()
+                .data(permissions)
+                .message("Success")
+                .build();
     }
 }

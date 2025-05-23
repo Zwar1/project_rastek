@@ -16,7 +16,7 @@ import java.util.List;
 public class ProjectFileController {
     private static final String CLIENTS_FILES_VIEW = "CLIENTS:FILES:VIEW";
     private static final String CLIENTS_FILES_ADD = "CLIENTS:FILES:UPLOAD";
-    private static final String CLIENTS_FILES_DELETE = "CLIENTS:FILES:DELETE";
+    private static final String CLIENTS_FILES_EDIT = "CLIENTS:FILES:EDIT";
 
     @Autowired
     private ProjectFileService projectFileService;
@@ -48,7 +48,7 @@ public class ProjectFileController {
         return projectFileService.getAllFilesByProjectId(id);
     }
 
-    @PreAuthorize("hasAuthority('" + CLIENTS_FILES_DELETE + "')")
+    @PreAuthorize("hasAuthority('" + CLIENTS_FILES_EDIT + "')")
     @DeleteMapping("/api/project/{id}/files/{fileId}")
     public ResponseEntity<String> deleteFile(
             @PathVariable Long id,

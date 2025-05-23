@@ -156,11 +156,13 @@ public class JabatanService {
 
         return jabatanEntities.stream().map(
                 jabatan -> JabatanRes.builder()
+                        .id(jabatan.getId())
                         .namaJabatan(jabatan.getNamaJabatan())
                         .kodeJabatan(jabatan.getKodeJabatan())
                         .isAtasan(jabatan.isAtasan())
                         .sequence(jabatan.getSequence())
                         .departement(jabatan.getDepartementEntity().getDepartement_name())
+                        .id_division(jabatan.getDivisionEntity() != null ? jabatan.getDivisionEntity().getId() : null)
                         .division(jabatan.getDivisionEntity() != null ? jabatan.getDivisionEntity().getDivision_name() : null)
                         .build()).collect(Collectors.toList());
     }

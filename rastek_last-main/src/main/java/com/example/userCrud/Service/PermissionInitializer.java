@@ -80,7 +80,7 @@ public class PermissionInitializer {
          createOrUpdatePermission("Clients", "Discussion", "Access", "Access Discussion");
          createOrUpdatePermission("Clients", "Bug Report", "Add", "Add Bug Report");
          createOrUpdatePermission("Clients", "Bug Report", "View", "View Bug Report");
-         createOrUpdatePermission("Clients", "Bug Report", "Delete", "Delete Bug Report");
+         createOrUpdatePermission("Clients", "Bug Report", "Edit", "Update and Delete Bug Report");
 
          // Company Permissions
          createOrUpdatePermission("Company", "Department", "Add", "Add New Department");
@@ -89,6 +89,9 @@ public class PermissionInitializer {
          createOrUpdatePermission("Company", "Division", "Add", "Add New Division");
          createOrUpdatePermission("Company", "Division", "View", "View Division and its details");
          createOrUpdatePermission("Company", "Division", "Edit", "Edit Division details and delete division");
+         createOrUpdatePermission("Company", "Job History", "Add", "Add Job History Data to Employee");
+         createOrUpdatePermission("Company", "Job History", "View", "View Job History Data");
+        createOrUpdatePermission("Company", "Job History", "Edit", "Edit Job History details and delete Job History");
 
          // Role Permissions
          createOrUpdatePermission("Role", "All Features", "Access", "Access All Role Features");

@@ -12,6 +12,7 @@ public class JabatanRes {
 
     //Struktural Fields
     private Long id;
+    private Long id_division;
     private String kodeJabatan;
     private String namaJabatan;
     private Boolean isAtasan;

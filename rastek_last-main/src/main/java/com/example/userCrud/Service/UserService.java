@@ -77,16 +77,17 @@ public class UserService implements UserDetailsService {
         user.setCreated_by(currentUsername);
         userRepository.save(user);
 
-        List<String> role = user.getRoles().stream()
-                .map(Roles::getName)
-                .toList();
+        List<RolesSimpleRes> roles = user.getRoles().stream()
+                .map(role -> new RolesSimpleRes(role.getId(), role.getName()))
+                .collect(Collectors.toList());
+
         return UserResponse.builder()
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .created_at(user.getCreatedAt())
                 .updated_at(user.getUpdatedAt())
                 .created_by(user.getCreated_by())
-                .roles(role)
+                .roles(roles)
                 .build();
     }
 
@@ -115,9 +116,10 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(user);
 
-        List<String> role = user.getRoles().stream()
-                .map(Roles::getName)
-                .toList();
+        List<RolesSimpleRes> rolesSimpleRes = user.getRoles().stream()
+                .map(role -> new RolesSimpleRes(role.getId(), role.getName()))
+                .collect(Collectors.toList());
+
         return UserResponse.builder()
                 .username(user.getUsername())
                 .email(user.getEmail())
@@ -125,7 +127,7 @@ public class UserService implements UserDetailsService {
                 .updated_at(user.getUpdatedAt())
                 .created_by(user.getCreated_by())
                 .updated_by(user.getUpdate_by())
-                .roles(role)
+                .roles(rolesSimpleRes)
                 .build();
     }
 
@@ -145,11 +147,9 @@ public class UserService implements UserDetailsService {
         }
 
         // Map roles safely
-        List<String> roles = Optional.ofNullable(user.getRoles())
-                .map(roleList -> roleList.stream()
-                        .map(Roles::getName)
-                        .collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
+        List<RolesSimpleRes> roles = user.getRoles().stream()
+                .map(role -> new RolesSimpleRes(role.getId(), role.getName()))
+                .collect(Collectors.toList());
 
         return UserResponse.builder()
                 .id(user.getId())
@@ -170,17 +170,18 @@ public class UserService implements UserDetailsService {
         List<User> userList = userRepository.findAll();
 
         return userList.stream().map(
-                user -> UserResponse.builder()
-                        .username(user.getUsername())
-                        .email(user.getEmail())
-                        .roles(user.getRoles().stream()
-                                .map(Roles::getName) // Extract name from each role
-                                .collect(Collectors.toList()))
-                        .created_at(user.getCreatedAt())
-                        .updated_at(user.getUpdatedAt())
-                        .created_by(user.getCreated_by())
-                        .updated_by(user.getUpdate_by())
-                        .build()).collect(Collectors.toList());
+                        user -> UserResponse.builder()
+                                .username(user.getUsername())
+                                .email(user.getEmail())
+                                .roles(user.getRoles().stream()
+                                        .map(role -> new RolesSimpleRes(role.getId(), role.getName()))
+                                        .collect(Collectors.toList()))
+                                .created_at(user.getCreatedAt())
+                                .updated_at(user.getUpdatedAt())
+                                .created_by(user.getCreated_by())
+                                .updated_by(user.getUpdate_by())
+                                .build())
+                .collect(Collectors.toList());
     }
 
 
@@ -219,9 +220,9 @@ public class UserService implements UserDetailsService {
 
         user.setUpdate_by(currentUsername);
 
-        List<String> roles = user.getRoles().stream()
-                .map(Roles::getName)
-                .toList();
+        List<RolesSimpleRes> roles = user.getRoles().stream()
+                .map(role -> new RolesSimpleRes(role.getId(), role.getName()))
+                .collect(Collectors.toList());
         //        UserResponse userResponse = toUserResponse(employeeEntity.getUser());
 
 

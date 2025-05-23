@@ -216,13 +216,19 @@ public class EmployeeService {
                 ? toEmployeeResponse(user.getEmployee())
                 : null;
 
+        List<RolesSimpleRes> roles = user.getRoles().stream()
+                .map(role -> new RolesSimpleRes(role.getId(), role.getName()))
+                .collect(Collectors.toList());
+
         return UserResponse.builder()
+                .id(user.getId()) // Add user ID to response
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .created_at(user.getCreatedAt())
                 .updated_at(user.getUpdatedAt())
                 .created_by(user.getCreated_by())
                 .updated_by(user.getUpdate_by())
+                .roles(roles)
                 .employee(employeeRes)
                 .build();
     }

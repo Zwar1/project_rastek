@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -61,6 +63,12 @@ public class RiwayatJabatanService {
         RiwayatJabatanEntity riwayatJabatan = riwayatJabatanRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Riwayat Jabatan Not Found"));
         return toRiwayatResponse(riwayatJabatan);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RiwayatJabatanRes> getAll() {
+        List<RiwayatJabatanEntity> riwayatJabatan = riwayatJabatanRepository.findAll();
+        return riwayatJabatan.stream().map(this::toRiwayatResponse).collect(Collectors.toList());
     }
 
     @Transactional
@@ -117,15 +125,20 @@ public class RiwayatJabatanService {
     private RiwayatJabatanRes toRiwayatResponse(RiwayatJabatanEntity riwayatJabatan) {
         // Membangun JabatanRes untuk Jabatan Struktural
         JabatanRes jabatanRes = JabatanRes.builder()
+                .id(riwayatJabatan.getId_jabatan().getId())
                 .namaJabatan(riwayatJabatan.getId_jabatan().getNamaJabatan())
                 .kodeJabatan(riwayatJabatan.getId_jabatan().getKodeJabatan())
                 .isAtasan(riwayatJabatan.getId_jabatan().isAtasan())
                 .sequence(riwayatJabatan.getId_jabatan().getSequence())
                 .departement(riwayatJabatan.getId_jabatan().getDepartementEntity() != null
                         ? riwayatJabatan.getId_jabatan().getDepartementEntity().getDepartement_name() : null)
+                .id_division(riwayatJabatan.getId_jabatan().getDivisionEntity() != null
+                        ? riwayatJabatan.getId_jabatan().getDivisionEntity().getId() : null)
                 .division(riwayatJabatan.getId_jabatan().getDivisionEntity() != null
                         ? riwayatJabatan.getId_jabatan().getDivisionEntity().getDivision_name() : null)
                 .build();
+
+        Long employeeNik = riwayatJabatanRepository.findEmployeeNikByRiwayatId(riwayatJabatan.getId());
 
         // Mengembalikan RiwayatJabatanRes yang menggunakan objek JabatanRes
         return RiwayatJabatanRes.builder()
@@ -136,9 +149,7 @@ public class RiwayatJabatanService {
                 .kontrakKedua(riwayatJabatan.getKontrakKedua())
                 .salary(riwayatJabatan.getSalary())
                 .kodeJabatan(jabatanRes)
+                .employee_nik(employeeNik)
                 .build();
     }
-
-
-
 }

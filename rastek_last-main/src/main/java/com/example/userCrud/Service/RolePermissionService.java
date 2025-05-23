@@ -84,7 +84,6 @@ public class RolePermissionService {
 
     private RolePermissionRes toResponse(RolePermissionEntity rolePermission) {
         return RolePermissionRes.builder()
-                //.id(rolePermission.getId()) // Remove this line
                 .rolesId(rolePermission.getRole().getId())
                 .permissionsId(rolePermission.getPermission().getId())
                 .permissionKey(rolePermission.getPermission().getPermissionKey())

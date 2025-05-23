@@ -21,4 +21,5 @@ public class RiwayatJabatanRes {
     private String kontrakKedua;
     private BigDecimal salary;
     private JabatanRes kodeJabatan;
+    private Long employee_nik;
 }

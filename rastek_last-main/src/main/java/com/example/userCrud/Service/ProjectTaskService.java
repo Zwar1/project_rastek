@@ -167,9 +167,7 @@ public class ProjectTaskService {
         taskEntity.setOnHold(req.isOnHold());
 
         if (req.getTaskMember() != null) {
-            Set<EmployeeEntity> teamMembers = employeeRepository.findAllById(req.getTaskMember())
-                    .stream()
-                    .collect(Collectors.toSet());
+            Set<EmployeeEntity> teamMembers = new HashSet<>(employeeRepository.findAllById(req.getTaskMember()));
             taskEntity.setTaskMember(teamMembers);
             projectTaskRepository.save(taskEntity);
         }

@@ -84,4 +84,12 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/api/users/{userId}/roles")
+    public web_response<UserResponse> getUserRoles(@PathVariable Long userId) {
+        UserResponse user = userService.getUser(userId);
+        return web_response.<UserResponse>builder()
+                .data(user)
+                .message("Success")
+                .build();
+    }
 }
