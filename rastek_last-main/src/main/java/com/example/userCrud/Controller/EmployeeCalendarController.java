@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasAuthority('CALENDAR:PERSONAL CALENDAR:ALL')")
 @RestController
+@PreAuthorize("hasAuthority('CALENDAR:PERSONAL CALENDAR:ALL')")
 public class EmployeeCalendarController {
 
     @Autowired
