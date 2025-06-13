@@ -232,10 +232,3 @@ public class ManualAttendanceLogController {
     }
 
 }
-
-
-
-
-
-
-

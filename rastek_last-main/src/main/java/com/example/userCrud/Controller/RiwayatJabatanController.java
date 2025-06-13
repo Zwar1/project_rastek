@@ -62,7 +62,7 @@ public class RiwayatJabatanController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public web_response<RiwayatJabatanRes> update(@RequestBody UpdateRiwayatJabatanReq request,
-                                            @PathVariable("id") Long id) {
+                                                  @PathVariable("id") Long id) {
         request.setId(id);
         RiwayatJabatanRes riwayatJabatanRes = riwayatJabatanService.update(request);
         return web_response.<RiwayatJabatanRes>builder().data(riwayatJabatanRes).build();

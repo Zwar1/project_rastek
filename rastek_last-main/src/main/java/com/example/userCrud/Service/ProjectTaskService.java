@@ -122,8 +122,8 @@ public class ProjectTaskService {
     public List<ProjectTaskRes> getAllTask() {
         List<ProjectTask> tasks = projectTaskRepository.findAll();
         return tasks.stream()
-               .map(this::mapToResponse)
-               .collect(Collectors.toList());
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional
