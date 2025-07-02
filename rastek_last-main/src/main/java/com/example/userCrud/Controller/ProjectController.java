@@ -1,9 +1,6 @@
 package com.example.userCrud.Controller;
 
-import com.example.userCrud.Dto.ChangeProjectStatusReq;
-import com.example.userCrud.Dto.ProjectReq;
-import com.example.userCrud.Dto.ProjectRes;
-import com.example.userCrud.Dto.web_response;
+import com.example.userCrud.Dto.*;
 import com.example.userCrud.Service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -46,6 +43,19 @@ public class ProjectController {
         return web_response.<ProjectRes>builder()
                 .data(projectRes)
                 .message("Project successfully fetched")
+                .build();
+    }
+
+    @PreAuthorize("hasAuthority('" + CLIENTS_PROJECT_DETAILS_VIEW + "')")
+    @GetMapping(
+            path = "/api/get/project/{id}/member",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public web_response<List<ProjectEmployeeRes>> getProjectMember(@PathVariable Long id) {
+        List<ProjectEmployeeRes> members = projectService.getProjectMembers(id);
+        return web_response.<List<ProjectEmployeeRes>>builder()
+                .data(members)
+                .message("Project members successfully fetched")
                 .build();
     }
 

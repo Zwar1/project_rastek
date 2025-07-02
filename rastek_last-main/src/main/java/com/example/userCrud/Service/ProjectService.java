@@ -132,6 +132,20 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
+    public List<ProjectEmployeeRes> getProjectMembers(Long id) {
+        Set<EmployeeEntity> members = projectRepository.findMembersByProjectId(id);
+        if (members == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found");
+        }
+        return members.stream()
+                .map(employee -> ProjectEmployeeRes.builder()
+                        .NIK(employee.getNIK())
+                        .name(employee.getName())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<ProjectRes> getAllProject() {
         List<ProjectEntity> projects = projectRepository.findAll();
         return projects.stream().map(this::toProjectResponse).collect(Collectors.toList());
@@ -244,9 +258,7 @@ public class ProjectService {
             projectRepository.save(project);
         }
         if (req.getMember() != null) {
-            Set<EmployeeEntity> teamMembers = employeeRepository.findAllById(req.getMember())
-                    .stream()
-                    .collect(Collectors.toSet());
+            Set<EmployeeEntity> teamMembers = new HashSet<>(employeeRepository.findAllById(req.getMember()));
             project.setMember(teamMembers);
             projectRepository.save(project);
         }
