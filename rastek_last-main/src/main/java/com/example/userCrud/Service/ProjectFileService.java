@@ -116,6 +116,12 @@ public class ProjectFileService {
     }
 
     @Transactional
+    public ProjectFile getFileByIdAndProjectId(Long fileId, Long projectId) {
+        return projectFileRepository.findByIdAndProjectId(fileId, projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
+    }
+
+    @Transactional
     public void deleteFile(Long projectId, Long fileId) {
         ProjectFile file = projectFileRepository.findByIdAndProjectId(fileId, projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
