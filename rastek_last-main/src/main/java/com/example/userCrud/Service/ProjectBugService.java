@@ -72,8 +72,11 @@ public class ProjectBugService {
     }
 
     @Transactional
-    public ProjectBugRes getBugReport(Long id) {
-        ProjectBugEntity bugEntity = projectBugRepository.findById(id)
+    public ProjectBugRes getBugReport(Long projectId, Long bugId) {
+        ProjectEntity projectEntity = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bug report entry not found"));
+
+        ProjectBugEntity bugEntity = projectBugRepository.findById(bugId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bug report entry not found"));
         return mapToResponse(bugEntity);
     }

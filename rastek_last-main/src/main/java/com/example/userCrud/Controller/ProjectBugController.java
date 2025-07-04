@@ -43,10 +43,10 @@ public class ProjectBugController {
 
     @PreAuthorize("hasAuthority('" + CLIENTS_BUGS_VIEW + "')")
     @GetMapping(
-            path = "/api/project/bugReport/{bugReportId}"
+            path = "/api/project/{projectId}/bugReport/{bugReportId}"
     )
-    public web_response<ProjectBugRes> getDetailedBugReport(@PathVariable("bugReportId") Long id) {
-        ProjectBugRes response = projectBugService.getBugReport(id);
+    public web_response<ProjectBugRes> getDetailedBugReport(@PathVariable Long projectId, @PathVariable("bugReportId") Long bugId) {
+        ProjectBugRes response = projectBugService.getBugReport(projectId, bugId);
         return web_response.<ProjectBugRes>builder().data(response).build();
     }
 
